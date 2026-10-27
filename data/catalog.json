@@ -1,0 +1,164 @@
+{
+  "_comment": "Mapping YOLO class (COCO) ke produk nyata di e-commerce Indonesia. Key = nama kelas YOLO COCO yang tepat.",
+
+  "cell phone": {
+    "sku": "ELK-001",
+    "product": "Samsung Galaxy A15 (Simulasi)",
+    "brand": "Samsung",
+    "price_idr": 1899000,
+    "category": "Smartphone",
+    "ecommerce_ref": "Tokopedia / Shopee — Samsung Galaxy A15"
+  },
+  "laptop": {
+    "sku": "ELK-002",
+    "product": "ASUS VivoBook 14 Intel i3 (Simulasi)",
+    "brand": "ASUS",
+    "price_idr": 5499000,
+    "category": "Laptop & Komputer",
+    "ecommerce_ref": "Tokopedia — ASUS VivoBook 14"
+  },
+  "keyboard": {
+    "sku": "ELK-003",
+    "product": "Keyboard Logitech K120 USB",
+    "brand": "Logitech",
+    "price_idr": 175000,
+    "category": "Aksesoris Komputer",
+    "ecommerce_ref": "Shopee — Logitech K120"
+  },
+  "mouse": {
+    "sku": "ELK-004",
+    "product": "Mouse Wireless Logitech M170",
+    "brand": "Logitech",
+    "price_idr": 149000,
+    "category": "Aksesoris Komputer",
+    "ecommerce_ref": "Tokopedia — Logitech M170"
+  },
+  "remote": {
+    "sku": "ELK-005",
+    "product": "Remote TV Universal RM-L1268",
+    "brand": "Universal",
+    "price_idr": 35000,
+    "category": "Elektronik Rumah",
+    "ecommerce_ref": "Shopee — Remote Universal"
+  },
+  "clock": {
+    "sku": "ELK-006",
+    "product": "Jam Dinding Deli 12 Inch",
+    "brand": "Deli",
+    "price_idr": 89000,
+    "category": "Elektronik Rumah",
+    "ecommerce_ref": "Tokopedia — Jam Deli"
+  },
+  "book": {
+    "sku": "ATK-001",
+    "product": "Buku Tulis Sinar Dunia 58 Lembar",
+    "brand": "Sinar Dunia",
+    "price_idr": 7500,
+    "category": "Alat Tulis",
+    "ecommerce_ref": "Alfamart / Indomaret — Buku Tulis Sinar Dunia"
+  },
+  "scissors": {
+    "sku": "ATK-002",
+    "product": "Gunting Joyko SC-809 All Purpose",
+    "brand": "Joyko",
+    "price_idr": 18500,
+    "category": "Alat Tulis",
+    "ecommerce_ref": "Tokopedia — Joyko SC-809"
+  },
+  "bottle": {
+    "sku": "MNM-001",
+    "product": "Aqua Botol Mineral 600ml",
+    "brand": "Aqua (Danone)",
+    "price_idr": 4500,
+    "category": "Minuman",
+    "ecommerce_ref": "Alfamart / Indomaret — Aqua 600ml"
+  },
+  "cup": {
+    "sku": "MNM-002",
+    "product": "Mie Sedaap Cup Ayam Spesial 75g",
+    "brand": "Wings Food",
+    "price_idr": 5500,
+    "category": "Makanan Instan",
+    "ecommerce_ref": "Shopee — Mie Sedaap Cup"
+  },
+  "bowl": {
+    "sku": "RMH-001",
+    "product": "Mangkok Melamin Polos 15cm",
+    "brand": "Lion Star",
+    "price_idr": 12000,
+    "category": "Peralatan Dapur",
+    "ecommerce_ref": "Tokopedia — Lion Star Mangkok"
+  },
+  "vase": {
+    "sku": "RMH-002",
+    "product": "Vas Bunga Keramik Dekorasi",
+    "brand": "Ikea Indonesia",
+    "price_idr": 79000,
+    "category": "Dekorasi Rumah",
+    "ecommerce_ref": "Ikea / Tokopedia — Vas Keramik"
+  },
+  "banana": {
+    "sku": "BSY-001",
+    "product": "Pisang Ambon Lokal (per 100g)",
+    "brand": "Segar",
+    "price_idr": 3000,
+    "category": "Buah & Sayur",
+    "ecommerce_ref": "HappyFresh / Sayurbox — Pisang Ambon"
+  },
+  "apple": {
+    "sku": "BSY-002",
+    "product": "Apel Fuji Import (per 100g)",
+    "brand": "Import",
+    "price_idr": 4500,
+    "category": "Buah & Sayur",
+    "ecommerce_ref": "HappyFresh — Apel Fuji"
+  },
+  "orange": {
+    "sku": "BSY-003",
+    "product": "Jeruk Medan Manis (per 100g)",
+    "brand": "Lokal",
+    "price_idr": 3500,
+    "category": "Buah & Sayur",
+    "ecommerce_ref": "Sayurbox — Jeruk Medan"
+  },
+  "carrot": {
+    "sku": "BSY-004",
+    "product": "Wortel Segar Kupas (per 100g)",
+    "brand": "Lokal",
+    "price_idr": 2000,
+    "category": "Buah & Sayur",
+    "ecommerce_ref": "Sayurbox / HappyFresh — Wortel"
+  },
+  "sandwich": {
+    "sku": "MKN-001",
+    "product": "Roti Tawar Sari Roti Jumbo 650g",
+    "brand": "Sari Roti",
+    "price_idr": 22500,
+    "category": "Makanan",
+    "ecommerce_ref": "Indomaret / Alfamart — Sari Roti Jumbo"
+  },
+  "pizza": {
+    "sku": "MKN-002",
+    "product": "Frozen Pizza Belfoods Royal 135g",
+    "brand": "Belfoods",
+    "price_idr": 35000,
+    "category": "Makanan Beku",
+    "ecommerce_ref": "Shopee / Tokopedia — Belfoods Pizza"
+  },
+  "cake": {
+    "sku": "MKN-003",
+    "product": "Bolu Gulung Nabati Richeese",
+    "brand": "Nabati",
+    "price_idr": 18000,
+    "category": "Snack",
+    "ecommerce_ref": "Indomaret — Richeese Bolu"
+  },
+  "fork": {
+    "sku": "RMH-003",
+    "product": "Garpu Makan Stainless Steel (1 set isi 6)",
+    "brand": "Zebra",
+    "price_idr": 32000,
+    "category": "Peralatan Dapur",
+    "ecommerce_ref": "Tokopedia — Garpu Zebra"
+  }
+}

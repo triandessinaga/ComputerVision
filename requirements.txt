@@ -1,0 +1,13 @@
+# ─── Smart Retail Inspector — Dependencies ───────────────────────────────────
+# Install: pip install -r requirements.txt
+# Python 3.10 – 3.12 recommended
+
+# AI & Computer Vision
+ultralytics>=8.3,<9          # YOLO object detection
+opencv-python>=4.8,<5        # webcam + image processing
+
+# GUI & Image rendering
+Pillow>=10,<13               # PIL: convert OpenCV frame to Tkinter image
+
+# OCR (opsional — butuh Tesseract binary terinstall terpisah)
+pytesseract>=0.3.10,<1

@@ -1,0 +1,3 @@
+# Folder ini untuk output runtime (CSV, foto, struk).
+# File output TIDAK di-push ke GitHub (lihat .gitignore).
+# Folder ini tetap ada agar program bisa langsung jalan.
