@@ -1,78 +1,86 @@
 # 📖 Panduan Praktikum Mandiri
 ## Smart Retail Inspector — AI Computer Vision untuk Bisnis
 
-> **Waktu:** 150 menit  
-> **Prasyarat:** Python terinstall, laptop + webcam  
-> **Yang dibawa:** Botol air minum, buku, gunting, atau ponsel
+> **Durasi:** 150 menit  
+> **Level:** Pemula — tidak perlu pengalaman AI sebelumnya  
+> **Yang dibutuhkan:** Laptop + webcam + botol/buku/ponsel/gunting
 
 ---
 
-## 🎯 Cerita & Konteks
+## 🎬 Cerita Proyek
 
-Anda baru bergabung sebagai **Junior Business Analyst** di startup retail.
+Anda baru bergabung sebagai **Junior Business Analyst** di startup retail Indonesia.
 
 Manajer Anda berkata:
 
-> *"Tim kita mau coba pakai AI untuk bantu kasir scan produk.  
-> Tolong buatkan prototipe dulu — pakai laptop biasa.  
-> Presentasikan minggu depan apakah ini feasible."*
+> *"Kita mau coba AI untuk bantu kasir scan produk lebih cepat.  
+> Tolong buat prototipe dulu — pakai laptop biasa.  
+> Saya mau lihat apakah ini feasible sebelum kita investasi lebih jauh."*
 
-Tugas Anda hari ini: **Proof of Concept (PoC)** — buktikan bahwa AI bisa mengenali produk dari kamera dan datanya bisa dicatat secara otomatis.
+Hari ini Anda akan **membuktikan konsepnya** (Proof of Concept):
+- Apakah AI bisa mengenali produk dari kamera?
+- Apakah datanya bisa otomatis tercatat ke sistem?
+- Di mana batas kemampuannya?
 
 ---
 
-## 🧠 Konsep Wajib Dipahami (15 menit)
+## 🧠 Cara Kerja Sistem (Baca Dulu — 10 Menit)
 
-### Pipeline Sistem
+### Pipeline dari Kamera ke Data
 
 ```
-┌──────────┐   ┌────────────────┐   ┌──────────────────────┐
-│  Webcam  │──▶│  YOLO Model    │──▶│   catalog.json       │
-│ (input)  │   │ (AI detection) │   │ (business mapping)   │
-└──────────┘   └────────────────┘   └──────────────────────┘
-                      │                        │
-               "bottle" 0.87          "Aqua 600ml - Rp 4.500"
-                      │
-               [SPACE] ← operator konfirmasi
-                      │
-              ┌───────▼────────┐
-              │  Keranjang     │──▶ Checkout ──▶ CSV + Struk
-              └────────────────┘
+┌──────────┐     ┌─────────────────┐     ┌────────────────────────┐
+│  Webcam  │────▶│   YOLO Model    │────▶│    catalog.json        │
+│  Laptop  │     │  (AI Deteksi)   │     │  (Pemetaan Bisnis)     │
+└──────────┘     └─────────────────┘     └────────────────────────┘
+                        │                          │
+                  "bottle"  0.87          "Aqua 600ml — Rp 4.500"
+                        │                    Brand: Aqua
+                        │
+                 [SPACE] ← Anda konfirmasi
+                        │
+              ┌─────────▼──────────┐
+              │     Keranjang      │──▶ [C] Checkout ──▶ CSV + Struk
+              └────────────────────┘
 ```
 
 ### Kosakata Teknis
 
-| Istilah | Penjelasan Sederhana |
-|---------|---------------------|
+| Istilah | Artinya |
+|---------|---------|
 | **Frame** | 1 foto dari video (30 foto/detik = 30 FPS) |
-| **Bounding Box** | Kotak yang mengelilingi objek di gambar |
-| **YOLO Class** | Kategori objek: `bottle`, `book`, `person`, dll |
-| **Confidence** | Skor keyakinan AI: 0.87 artinya 87% yakin |
-| **COCO Dataset** | 80 kategori benda yang dipakai melatih model ini |
+| **Bounding Box** | Kotak yang mengelilingi objek yang dideteksi |
+| **YOLO Class** | Kategori objek: `bottle`, `book`, `cell phone`, dll |
+| **Confidence** | Skor keyakinan: `0.87` = AI 87% yakin |
+| **COCO** | Dataset 80 kategori benda yang dipakai melatih model ini |
 | **Blacklist** | Kelas yang diabaikan: `person`, `car`, `chair`, dll |
 
-### ⚠️ Yang Harus Anda Tahu
+### ⚠️ Batasan Yang Wajib Dipahami
 
-> Model ini mengenali **kategori generik**, bukan merek spesifik.
-> `cell phone` bisa Samsung, iPhone, atau Xiaomi — model tidak tahu.
+> Model YOLO ini mengenali **kategori generik**, bukan merek.
 >
-> Itulah mengapa operator **harus konfirmasi** sebelum data disimpan.
-> Sistem ini dirancang untuk **demo dan pembelajaran**, bukan kasir produksi.
+> `cell phone` bisa berarti Samsung, iPhone, atau Xiaomi — model tidak tahu bedanya.
+> Inilah mengapa **operator harus konfirmasi** (tekan SPACE) sebelum data masuk.
+>
+> Sistem ini adalah **prototipe pendidikan**. Bukan kasir produksi.
 
 ---
 
-## 🔧 TAHAP A — Setup (0–20 menit)
+## ⚙️ TAHAP A — Setup (0–20 Menit)
 
-### A1. Buka Project
+### A1. Clone / Download Proyek
 
-1. Buka **VS Code**
-2. `File` → `Open Folder` → pilih folder `ComputerVision`
-3. Buka terminal: `Terminal` → `New Terminal`
+```bash
+git clone https://github.com/triandessinaga/ComputerVision.git
+cd ComputerVision
+```
+
+Atau download ZIP dari GitHub → Extract → buka di VS Code.
 
 ### A2. Buat Virtual Environment
 
 ```bash
-# Cek Python tersedia
+# Cek Python tersedia (butuh 3.10–3.12)
 py --version
 
 # Buat environment terisolasi
@@ -91,11 +99,10 @@ Aktifkan:
 source .venv/bin/activate
 ```
 
-> **Jika PowerShell ditolak:**
+> Jika PowerShell menolak (execution policy), jalankan sekali:
 > ```powershell
 > Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 > ```
-> Lalu coba lagi.
 
 ### A3. Install Dependencies
 
@@ -103,216 +110,231 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Tunggu ±2–5 menit. Output normal:
-```
-Successfully installed ultralytics-X.X opencv-python-X.X Pillow-X.X ...
-```
+Tunggu ±3–7 menit. Library yang diinstall:
+- `ultralytics` — YOLO object detection
+- `opencv-python` — baca webcam & proses gambar
+- `Pillow` — render frame ke GUI Tkinter
 
-### A4. Verifikasi
+### A4. Verifikasi Instalasi
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-Harus muncul: `Ran 18 tests in 0.001s --- OK`
+Harus muncul:
+```
+Ran 18 tests in 0.001s
+OK
+```
 
-### A5. Jalankan Aplikasi!
+### A5. Jalankan!
 
 ```bash
 python app.py
 ```
 
-Model YOLO (~50MB) diunduh otomatis pertama kali. Tunggu jendela GUI terbuka.
+Model YOLO (~50MB) diunduh otomatis pertama kali — butuh internet.
+Setelah itu bisa dijalankan offline.
 
-**✅ Checkpoint A:** Screenshot terminal menampilkan `OK` dan GUI terbuka.
+**📸 Checkpoint A:** Screenshot terminal menampilkan `OK` dan GUI terbuka.
 
 ---
 
-## 📷 TAHAP B — Kenali Aplikasi (20–40 menit)
+## 📷 TAHAP B — Kenali Aplikasi (20–40 Menit)
 
 ### Layout GUI
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  🔍 Smart Retail Inspector      👤 OPERATOR    🕐 Waktu      │
-├──────────────────────────┬──────────────────────────────────┤
-│  📷 AI Kamera │ 📋 Katalog│  🛒 Keranjang Belanja           │
-│  ┌────────────┐  🎥Kontrol│                                  │
-│  │            │  ▶Aktifkan│  Produk   Qty   Harga  Subtotal │
-│  │  KAMERA    │  ■ Stop   │  ──────────────────────────────  │
-│  │  LIVE      │           │                                  │
-│  │            │  🎯Deteksi│                                  │
-│  └────────────┘  ⌨Shortcut│  Total:              Rp 0       │
-│  Feedback area  (TERLIHAT)│  [💳 CHECKOUT [C]]               │
-│                           │  [🔄 Reset [N]]                  │
-└──────────────────────────┴──────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  🔍 Smart Retail Inspector            👤 OPERATOR-01   🕐 Waktu  │
+├──────────────────────────┬───────────────────────────────────────┤
+│  📷 AI Kamera  │📋 Katalog│        🛒 Keranjang Belanja           │
+│                           │                                       │
+│  ┌────────────┐  🎥Kontrol│  Produk      Qty   Harga   Subtotal  │
+│  │            │  ──────── │  ─────────────────────────────────── │
+│  │  KAMERA    │  ▶Aktifkan│                                       │
+│  │  LIVE      │  ■ Stop   │                                       │
+│  │            │  ──────── │  Total:                  Rp 0        │
+│  └────────────┘  🎯Deteksi│  [💳 CHECKOUT [C]]                    │
+│  ✅ Feedback area ⌨Shortcut│  [🔄 Reset [N]]                       │
+└──────────────────────────┴───────────────────────────────────────┘
 ```
 
-### Coba Langkah Pertama
+### Coba Langsung
 
 1. Klik tab **📷 AI Kamera**
-2. Di panel kanan kamera, klik tombol **▶ Aktifkan Kamera**
-3. Arahkan **botol air** ke webcam (jarak 30–60 cm)
-4. Lihat panel **🎯 Deteksi Sekarang** — nama produk dan confidence muncul
-5. Tekan **`SPACE`** → produk masuk keranjang
-6. Lihat keranjang di panel kanan bertambah
+2. Di panel kanan kamera, klik **▶ Aktifkan Kamera**
+3. Arahkan **botol air** ke webcam (jarak 30–60 cm, cahaya cukup)
+4. Lihat panel **🎯 Deteksi Sekarang** — nama produk & confidence muncul
+5. Tekan **`SPACE`** → produk masuk keranjang kanan
+6. Tekan **`C`** → lihat dialog checkout dengan kembalian otomatis
 
-**✅ Checkpoint B:** Screenshot GUI dengan bounding box dan produk di keranjang.
+**📸 Checkpoint B:** Screenshot GUI dengan bounding box aktif dan 1 produk di keranjang.
 
 ---
 
-## 🧪 TAHAP C — Eksperimen Terstruktur (40–90 menit)
+## 🧪 TAHAP C — Eksperimen (40–90 Menit)
 
 ### Worksheet Eksperimen
 
-Lakukan minimal **6 percobaan** berbeda. Isi tabel ini:
+Lakukan **minimal 6 percobaan** dengan kondisi berbeda:
 
-| # | Objek Fisik | YOLO Class | Produk Terdeteksi | Conf | Kondisi | Benar? |
-|---|-------------|-----------|-------------------|------|---------|--------|
-| 1 | Botol air | bottle | Aqua Mineral 600ml | 0.__ | Cahaya normal | ✓/✗ |
-| 2 | Buku | book | Buku Tulis Sinar Dunia | 0.__ | Cahaya normal | ✓/✗ |
-| 3 | Ponsel | cell phone | Samsung Galaxy A15 | 0.__ | Cahaya normal | ✓/✗ |
-| 4 | Botol air | bottle | | | Redup/malam | ✓/✗ |
-| 5 | Buku | book | | | Tertutup sebagian | ✓/✗ |
-| 6 | Objek bebas | | | | Kondisi Anda pilih | ✓/✗ |
+| # | Objek Fisik | YOLO Class | Produk di App | Conf | Kondisi | ✓/✗ |
+|---|-------------|-----------|---------------|------|---------|------|
+| 1 | Botol air | `bottle` | Aqua Mineral 600ml | | Cahaya normal | |
+| 2 | Buku | `book` | Buku Tulis Sinar Dunia | | Cahaya normal | |
+| 3 | Ponsel | `cell phone` | Samsung Galaxy A15 | | Cahaya normal | |
+| 4 | Botol air | `bottle` | | | Cahaya redup | |
+| 5 | Buku | `book` | | | Tertutup sebagian | |
+| 6 | Bebas | | | | Kondisi pilihan Anda | |
 
-### Analisis
-
-Setelah tabel terisi, hitung:
+### Hitung Success Rate
 
 ```
-Success Rate = (jumlah ✓ / total percobaan) × 100%
+Success Rate = (jumlah ✓) ÷ (total percobaan) × 100%
 ```
 
-Jawab pertanyaan ini:
-1. Pada kondisi apa confidence paling tinggi?
-2. Pada kondisi apa model paling sering salah?
-3. Jika confidence = 0.45, apakah Anda akan percaya hasilnya untuk transaksi nyata?
+### Pertanyaan Analisis
 
-**✅ Checkpoint C:** Tabel 6+ baris + success rate terhitung.
+1. Kondisi apa yang membuat confidence **paling tinggi**?
+2. Kondisi apa yang paling sering **salah** atau gagal?
+3. Jika confidence = 0.42, apakah Anda percaya hasilnya untuk transaksi uang nyata? Jelaskan.
+
+**📸 Checkpoint C:** Tabel terisi lengkap + angka success rate.
 
 ---
 
-## 💳 TAHAP D — Simulasi Transaksi (90–110 menit)
+## 💳 TAHAP D — Transaksi Lengkap (90–110 Menit)
 
-### Lakukan Transaksi Lengkap
+### Lakukan Transaksi
 
-1. Scan 2 botol air (`SPACE` × 2)
-2. Scan 1 buku (`SPACE` × 1)
-3. Tekan **`C`** → dialog checkout terbuka
-4. Masukkan nominal bayar (misal: 50000)
-5. Lihat **kembalian otomatis** + rincian pecahan uang
+1. Scan **2× botol air** → tekan `SPACE` dua kali
+2. Pindah tab **📋 Katalog** → double-click `book` → tambah 1
+3. Tekan **`C`** (Checkout)
+4. Masukkan uang bayar: misal `50000`
+5. Lihat kembalian otomatis + rincian pecahan uang
 6. Klik **✓ Proses Pembayaran**
-7. Struk muncul di dialog
 
-### Cek Data Output
+### Cek Output yang Dihasilkan
+
+Buka folder `output/` di VS Code atau Explorer:
 
 ```
 output/
-  transactions.csv     ← buka dengan Excel
-  inspections.csv      ← buka dengan Excel
-  receipts/INV-*.txt   ← buka dengan Notepad
+├── transactions.csv      ← Buka dengan Excel — ini data transaksi Anda
+├── inspections.csv       ← Log inspeksi dari tombol [S]
+└── receipts/
+    └── INV-*.txt         ← Struk belanja dalam format teks
 ```
 
-### Edit Katalog
+**Contoh baris di `transactions.csv`:**
+```
+INV-20261027-103500,2026-10-27T10:35:00,OPERATOR-01,MNM-001,
+Aqua Botol Mineral 600ml,2,4500,9000,50000,41000
+```
+
+Bisa baca artinya?
+- `2` botol × Rp `4.500` = `Rp 9.000`
+- Dibayar `Rp 50.000` → kembalian `Rp 41.000`
+
+### Edit Harga Produk
 
 Buka `data/catalog.json`, ubah harga `bottle`:
 ```json
 "bottle": {
     "sku": "MNM-001",
     "product": "Aqua Botol Mineral 600ml",
+    "brand": "Aqua (Danone)",
     "price_idr": 6000
 }
 ```
 Simpan → jalankan ulang `python app.py` → scan botol lagi.
+Harga di keranjang sekarang Rp 6.000? ✅ Itulah cara **business mapping** bekerja.
 
-Harga di keranjang berubah? **Itulah cara mapping bisnis bekerja.**
-
-**✅ Checkpoint D:** Screenshot checkout + CSV terbuka di Excel.
+**📸 Checkpoint D:** Screenshot checkout dialog + CSV terbuka di Excel.
 
 ---
 
-## 🔒 TAHAP E — Privacy Detective (110–120 menit)
+## 🔒 TAHAP E — Privacy Detective (110–120 Menit)
 
-Tentukan status setiap skenario: **Aman / Perlu Izin / Dilarang**
+Tentukan status setiap skenario — **Aman / Perlu Izin / Dilarang**:
 
-| # | Skenario | Status | Alasan |
-|---|----------|--------|--------|
+| # | Skenario | Status | Alasan Singkat |
+|---|----------|--------|----------------|
 | 1 | Scan botol Aqua, tidak ada orang di frame | | |
 | 2 | Webcam menangkap wajah pelanggan di belakang produk | | |
-| 3 | Scan struk belanja yang memuat nomor telepon | | |
-| 4 | Foto rak produk di toko tanpa orang | | |
-| 5 | Rekam video kerja kasir seharian tanpa izin | | |
+| 3 | Scan struk yang ada nomor telepon pemilik | | |
+| 4 | Foto rak produk di toko tanpa ada orang | | |
+| 5 | Rekam video kerja kasir seharian tanpa izin mereka | | |
 
-Pertanyaan tambahan:
-- Cek folder `output/` — apakah ada foto wajah tersimpan?
-- Apakah sistem ini mengirim data ke server?
+**Cek sendiri:** Buka folder `output/*.jpg` — apakah ada foto wajah Anda tersimpan saat tekan `S`?
+Apakah data dikirim ke server internet? (Jawab: tidak — semua lokal)
 
 ---
 
-## 🏗️ TAHAP F — Business Studio (120–140 menit)
+## 🏗️ TAHAP F — Business Studio (120–140 Menit)
 
-### Buat Diagram Alur Sistem
+### Buat Diagram Sistem
 
-Gambar di kertas atau digital (draw.io, Figma, PowerPoint):
+Gambar alur ini di kertas, draw.io, atau PowerPoint:
 
 ```
-Kamera
-  │
-  ▼
+Kamera Laptop
+     │
+     ▼
 [YOLO Detection]
-  │
-  ├── person → DIABAIKAN (blacklist)
-  ├── chair  → DIABAIKAN (blacklist)
-  │
-  └── bottle → CATALOG MATCH
-                  │
-                  ▼
-            Operator lihat hasil
-                  │
-            [SPACE] konfirmasi
-                  │
-                  ▼
-            Keranjang bertambah
-                  │
-                  ▼
-              [C] Checkout
-                  │
-            ┌─────┴─────┐
-            ▼           ▼
-        CSV Log      Struk .txt
-            │
-            ▼
-      Dashboard Manajer
+     │
+     ├──▶ person/chair/car ──▶ DIABAIKAN (blacklist)
+     │
+     └──▶ bottle/book/phone ──▶ Cocok di catalog.json
+                                        │
+                                        ▼
+                               Panel "Deteksi Sekarang"
+                               (nama produk + harga + brand)
+                                        │
+                               Operator tekan [SPACE]
+                                        │
+                                        ▼
+                                  Keranjang Belanja
+                                        │
+                               Operator tekan [C]
+                                        │
+                            ┌──────────┴───────────┐
+                            ▼                       ▼
+                    transactions.csv          Struk .txt
+                            │
+                            ▼
+                    Excel / Dashboard
+                    Laporan Manajer
 ```
 
-### Isi tabel ini:
+### Isi Tabel Analisis
 
-| Elemen | Jawaban Anda |
-|--------|-------------|
-| Aktor dalam sistem | |
-| 3 data wajib di setiap transaksi | |
+| Pertanyaan | Jawaban Anda |
+|------------|-------------|
+| Siapa aktor dalam sistem? | |
+| 3 data wajib setiap transaksi | |
 | 2 validasi sebelum data disimpan | |
-| 1 KPI yang bisa diukur | |
+| 1 KPI yang bisa diukur dari CSV | |
 | 2 risiko utama | |
 
 ---
 
-## 💬 TAHAP G — Refleksi (140–150 menit)
+## 💬 TAHAP G — Refleksi (140–150 Menit)
 
-Jawab 4 pertanyaan ini (minimal 2 kalimat per jawaban):
+Jawab **4 pertanyaan** ini secara tertulis (minimal 2–3 kalimat):
 
 **1. Kapan model gagal?**
-Deskripsikan 1 kondisi nyata di mana AI salah mendeteksi.
+Deskripsikan 1 kondisi nyata dari eksperimen Anda di mana AI salah atau tidak mendeteksi.
 
-**2. Apa konsekuensi bisnis jika salah?**
-Jika `laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500) — apa yang terjadi pada transaksi?
+**2. Konsekuensi bisnis jika salah?**
+Jika `laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500) dan langsung diproses — apa kerugiannya? Siapa yang dirugikan?
 
 **3. Mengapa operator tetap harus konfirmasi?**
-Sistem ini meminta SPACE sebelum menambah item — apakah ini tepat? Jelaskan.
+Sistem meminta SPACE sebelum menambah item ke keranjang. Apakah lebih baik dibuat otomatis? Berikan argumen pro dan kontra.
 
-**4. Apakah siap untuk toko nyata?**
-Sebutkan minimal 3 hal yang harus ditambahkan sebelum bisa digunakan di produksi.
+**4. Apa yang perlu ditambah untuk produksi nyata?**
+Sebutkan **3 hal konkret** yang harus ada sebelum sistem ini bisa dipakai di kasir toko sungguhan.
 
 ---
 
@@ -320,66 +342,58 @@ Sebutkan minimal 3 hal yang harus ditambahkan sebelum bisa digunakan di produksi
 
 | Level | Tantangan | XP |
 |-------|-----------|-----|
-| 🟢 **Starter** | GUI aktif + bounding box terlihat | 10 |
+| 🟢 **Starter** | GUI aktif + bounding box terlihat di kamera | 10 |
 | 🔵 **Explorer** | Deteksi 3 jenis produk berbeda | 15 |
-| 🟡 **Analyst** | Tabel 6 eksperimen + success rate | 20 |
-| 🟠 **Developer** | Edit catalog + transaksi + CSV valid | 25 |
+| 🟡 **Analyst** | Tabel 6 eksperimen + success rate dihitung | 20 |
+| 🟠 **Developer** | Edit catalog.json + transaksi + CSV valid | 25 |
 | 🔴 **Business Boss** | Diagram sistem + KPI + 2 risiko | 20 |
-| ⭐ **Privacy Guardian** | Privacy Detective semua dijawab | 10 |
+| ⭐ **Privacy Guardian** | Privacy Detective semua dijawab + alasan | 10 |
 | 🏆 **BONUS** | Tambah 1 produk baru ke catalog.json | +10 |
 
-**Total: 100 XP untuk nilai penuh** (+ 10 XP bonus)
+**Total: 100 XP = nilai penuh** *(+10 XP bonus)*
 
 ---
 
-## 📦 File yang Dikumpulkan
+## 🌴 Tugas Lanjutan: SawitVision
 
-Buat ZIP bernama: `NamaNIM_SmartRetail.zip`
-
-```
-✅ screenshot_webcam_aktif.png         GUI + bounding box
-✅ screenshot_checkout.png             Dialog checkout + kembalian
-✅ output/transactions.csv             Min. 1 transaksi
-✅ output/inspections.csv              Min. 3 inspeksi [S]
-✅ output/receipts/INV-*.txt           Struk transaksi
-✅ tabel_eksperimen.pdf                6+ baris + success rate
-✅ diagram_sistem.png                  Alur sistem
-✅ refleksi.pdf                        4 jawaban refleksi
-✅ privacy_detective.pdf               Jawaban 5 skenario
-```
-
-> **Hapus wajah dan data pribadi** sebelum mengumpulkan!
+Lihat **[TUGAS_SAWIT.md](TUGAS_SAWIT.md)** untuk tugas mandiri transfer ke industri kelapa sawit.
 
 ---
 
-## 🌴 Tugas Lanjutan
+## 📦 Yang Dikumpulkan ke Moodle
 
-Lihat file **[TUGAS_SAWIT.md](TUGAS_SAWIT.md)** untuk tugas transfer ke industri kelapa sawit.
+Buat ZIP: `NamaNIM_SmartRetail.zip`
+
+```
+✅ screenshot_A_gui_terbuka.png         GUI aktif
+✅ screenshot_B_bbox_keranjang.png      Bounding box + produk di keranjang
+✅ screenshot_D_checkout.png            Dialog checkout + kembalian
+✅ screenshot_D_excel_csv.png           transactions.csv terbuka di Excel
+✅ tabel_eksperimen.pdf                 6+ baris + success rate
+✅ diagram_sistem.png                   Diagram alur dari Tahap F
+✅ refleksi.pdf                         Jawaban 4 pertanyaan Tahap G
+✅ privacy_detective.pdf                Tabel 5 skenario + alasan
+✅ sawit/ (folder)                      Output Tugas Sawit (lihat TUGAS_SAWIT.md)
+```
+
+> ⚠️ **Pastikan:** Tidak ada wajah orang atau data pribadi di screenshot yang dikumpulkan!
 
 ---
 
 ## 🆘 Troubleshooting Cepat
 
-```bash
-# Error: No module named 'cv2'
-pip install opencv-python
-
-# Error: No module named 'ultralytics'
-pip install ultralytics
-
-# Error: No module named 'PIL'
-pip install Pillow
-
-# Kamera tidak terbuka
-python app.py --camera 1
-
-# Objek tidak terdeteksi
-python app.py --conf 0.25
-
-# Tidak punya webcam
-python app.py --image foto_produk.jpg
-```
+| Masalah | Solusi |
+|---------|--------|
+| `ModuleNotFoundError: cv2` | `pip install opencv-python` |
+| `ModuleNotFoundError: ultralytics` | `pip install ultralytics` |
+| `ModuleNotFoundError: PIL` | `pip install Pillow` |
+| Kamera hitam / tidak buka | Tutup Zoom/Teams, cek Settings → Privacy → Camera |
+| Kamera tidak ditemukan | `python app.py --camera 1` |
+| Tombol tidak respons | Klik jendela utama GUI dulu (bukan terminal) |
+| Objek tidak terdeteksi | Tambah cahaya · jarak 30–60cm · `--conf 0.25` |
+| FPS lambat | Normal di CPU — tutup browser & aplikasi berat lain |
+| Tidak punya webcam | `python app.py --image foto_produk.jpg` |
 
 ---
 
-*Good luck! Jika ada pertanyaan, post di forum Moodle* 🚀
+*Selamat mencoba! Kalau stuck, post pertanyaan di forum Moodle* 🚀

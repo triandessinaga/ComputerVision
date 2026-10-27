@@ -1,42 +1,60 @@
-# ── Python ────────────────────────────────────────────────────────────────────
+# ════════════════════════════════════════════════════════════════
+#  Smart Retail Inspector — .gitignore
+#  File ini menentukan apa yang TIDAK di-push ke GitHub
+# ════════════════════════════════════════════════════════════════
+
+# ── Dokumen internal (dosen only, jangan publish) ────────────────
+README_DOSEN.md
+
+# ── Python bytecode ───────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-.Python
 *.egg-info/
 dist/
 build/
 *.egg
 
-# ── Virtual Environment (jangan push ke GitHub) ───────────────────────────────
+# ── Virtual environment (ratusan MB, tidak perlu di repo) ─────────
 .venv/
 venv/
 env/
 ENV/
 
-# ── Output runtime (dihasilkan saat program jalan) ───────────────────────────
-output/inspections.csv
-output/transactions.csv
-output/receipts/
-output/*.jpg
-output/*.png
-output/ocr_result.txt
-
-# ── Model YOLO (besar, diunduh otomatis) ─────────────────────────────────────
+# ── Model AI (besar, diunduh otomatis oleh ultralytics) ──────────
 *.pt
 *.onnx
 *.torchscript
+runs/
 
-# ── IDE & OS ──────────────────────────────────────────────────────────────────
+# ── Output runtime (dibuat saat program jalan) ───────────────────
+#    Mahasiswa generate sendiri, tidak perlu dari repo
+output/*.jpg
+output/*.jpeg
+output/*.png
+output/inspections.csv
+output/transactions.csv
+output/ocr_result.txt
+output/receipts/
+# Kecuali .gitkeep agar folder tetap ada
+!output/.gitkeep
+
+# ── IDE ───────────────────────────────────────────────────────────
 .vscode/settings.json
+.vscode/launch.json
 .idea/
 *.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 desktop.ini
+ehthumbs.db
 
-# ── Secrets & credentials ────────────────────────────────────────────────────
+# ── Credentials & secrets ─────────────────────────────────────────
 .env
 *.key
 secrets.json
+credentials.json
