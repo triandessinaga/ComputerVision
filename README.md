@@ -29,94 +29,152 @@ Webcam → YOLO AI → Produk Terdeteksi → [SPACE] → Keranjang → [C] Check
 
 # 🛠️ BAGIAN 1 — BANGUN DARI NOL
 
-> Ini adalah jalur utama. Ikuti step by step dari awal.  
-> Jika ada kendala teknis yang tidak bisa diselesaikan, lihat **Bagian 2 (Clone)** di bawah.
+> Jalur utama — Anda memahami setiap bagian sistem dari awal.
+> Panduan tersedia untuk **Windows** dan **macOS**.
+> Jika ada kendala teknis, gunakan **Bagian 4 (Clone)** sebagai jalan pintas.
 
 ---
 
-## LANGKAH 1 — Install Python
+## LANGKAH 1 — Cek / Install Python
 
-### Cek apakah Python sudah ada
+### Cek apakah Python sudah terpasang
 
-Buka **Command Prompt** atau **PowerShell**, ketik:
-```bash
-py --version
-```
+| OS | Buka terminal | Perintah |
+|----|---------------|---------|
+| 🪟 Windows | PowerShell atau CMD | `py --version` |
+| 🍎 macOS | Terminal (`Cmd+Space` → ketik `Terminal`) | `python3 --version` |
 
-Kalau muncul `Python 3.10.x` atau lebih baru → **lanjut ke Langkah 2**.
+Hasil yang diharapkan: `Python 3.10.x` atau lebih baru.  
+Jika muncul **error** atau versi lama → install Python dulu.
 
-Kalau muncul error atau versi lama → install dulu:
+---
 
-1. Buka browser → pergi ke **https://python.org/downloads**
-2. Klik tombol kuning besar **"Download Python 3.12.x"**
-3. Jalankan installer yang diunduh
-4. ⚠️ **WAJIB centang** kotak **"Add Python to PATH"** di bagian bawah installer
-5. Klik **Install Now**
-6. Setelah selesai, tutup dan buka ulang PowerShell
+### Install Python (jika belum ada)
+
+**🪟 Windows:**
+1. Buka **https://python.org/downloads**
+2. Klik tombol besar **"Download Python 3.12.x"**
+3. Jalankan file `.exe` yang diunduh
+4. ⚠️ **WAJIB centang "Add Python to PATH"** di bagian bawah installer
+5. Klik **Install Now** → tunggu selesai
+6. Tutup dan buka ulang PowerShell
 7. Verifikasi: `py --version` → harus muncul versi Python
 
+**🍎 macOS (Pilihan A — Homebrew, direkomendasikan):**
+```bash
+# Install Homebrew dulu jika belum ada
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install Python
+brew install python@3.12
+
+# Verifikasi
+python3 --version
+```
+
+**🍎 macOS (Pilihan B — Installer langsung):**
+1. Buka **https://python.org/downloads/macos**
+2. Download **macOS 64-bit universal2 installer**
+3. Jalankan file `.pkg` → ikuti wizard
+4. Buka Terminal → verifikasi: `python3 --version`
+
 ---
 
-## LANGKAH 2 — Siapkan Folder Proyek
+## LANGKAH 2 — Install VS Code
 
-Buat folder kosong untuk proyek. Contoh:
-```
-D:\Praktikum\SmartRetail\
-```
+Download di **https://code.visualstudio.com/download**
 
-Caranya:
-1. Buka **File Explorer**
-2. Masuk ke Drive D (atau lokasi yang Anda inginkan)
-3. Klik kanan → **New Folder** → beri nama `SmartRetail`
+| OS | Yang diunduh | Cara install |
+|----|-------------|-------------|
+| 🪟 Windows | File `.exe` | Jalankan installer, klik Next–Next–Finish |
+| 🍎 macOS | File `.zip` | Extract → drag **Visual Studio Code.app** ke folder **Applications** |
 
-Lalu buka folder itu di **VS Code**:
-1. Buka VS Code
-2. `File` → `Open Folder` → pilih folder `SmartRetail`
-3. Buka terminal di VS Code: menu `Terminal` → `New Terminal`
+**Install Python Extension di VS Code:**
+1. Tekan `Ctrl+Shift+X` (Windows) atau `Cmd+Shift+X` (Mac)
+2. Cari **Python** → pilih yang dari **Microsoft** → klik **Install**
 
 ---
 
-## LANGKAH 3 — Buat Virtual Environment
+## LANGKAH 3 — Siapkan Folder Proyek
 
-Virtual environment adalah "ruang terisolasi" untuk Python — agar library yang diinstall tidak bercampur dengan proyek lain.
+**🪟 Windows:**
+1. Buka **File Explorer** → navigasi ke Drive C atau D
+2. Klik kanan di area kosong → **New** → **Folder**
+3. Beri nama `SmartRetail`
+4. Contoh lokasi: `C:\Users\NamaAnda\Documents\SmartRetail`
 
+**🍎 macOS:**
+1. Buka **Finder** → navigasi ke **Documents** atau Desktop
+2. Klik kanan di area kosong → **New Folder**
+3. Beri nama `SmartRetail`
+4. Contoh lokasi: `/Users/NamaAnda/Documents/SmartRetail`
+
+**Buka di VS Code:**
+1. Buka VS Code → `File` → `Open Folder`
+2. Pilih folder `SmartRetail`
+3. Buka terminal baru: menu `Terminal` → `New Terminal`
+
+---
+
+## LANGKAH 4 — Buat Virtual Environment
+
+Virtual environment = ruang terisolasi agar library tidak bercampur antar proyek.
+
+**🪟 Windows (PowerShell):**
 ```bash
 py -3 -m venv .venv
 ```
 
-Setelah berhasil, akan muncul folder `.venv` di proyek Anda.
-
-**Aktifkan virtual environment:**
-
+**🍎 macOS / Linux:**
 ```bash
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
+python3 -m venv .venv
 ```
 
-Jika muncul error **"execution policy"**:
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-```
-Ketik `Y` lalu Enter, kemudian coba aktifkan lagi.
-
-```bash
-# Windows CMD (alternatif)
-.venv\Scripts\activate.bat
-```
-
-```bash
-# macOS / Linux
-source .venv/bin/activate
-```
-
-✅ Berhasil jika di terminal muncul `(.venv)` di awal baris.
+Folder `.venv` akan muncul di dalam proyek Anda.
 
 ---
 
-## LANGKAH 4 — Buat File `requirements.txt`
+### Aktifkan Virtual Environment
 
-Di VS Code, buat file baru bernama `requirements.txt` di root folder proyek.
-Isi dengan:
+**🪟 Windows — PowerShell:**
+```bash
+.\.venv\Scripts\Activate.ps1
+```
+
+> Jika muncul error *"cannot be loaded because running scripts is disabled"*:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+> Ketik `Y` → Enter → coba aktifkan lagi.
+
+**🪟 Windows — Command Prompt (CMD):**
+```bash
+.venv\Scripts\activate.bat
+```
+
+**🍎 macOS / Linux:**
+```bash
+source .venv/bin/activate
+```
+
+**✅ Berhasil** jika terminal menampilkan `(.venv)` di awal baris:
+```
+(.venv) PS C:\Users\Anda\SmartRetail>       ← Windows PowerShell
+(.venv) C:\Users\Anda\SmartRetail>          ← Windows CMD
+(.venv) anda@MacBook SmartRetail %          ← macOS
+```
+
+> ⚠️ **Penting:** Setiap kali membuka terminal baru, aktifkan ulang virtual environment!
+
+---
+
+## LANGKAH 5 — Buat File `requirements.txt`
+
+Di VS Code, klik ikon **New File** (atas panel kiri) → beri nama `requirements.txt`.  
+Isi dengan baris berikut, lalu simpan:
+
+- Windows: `Ctrl+S`
+- macOS: `Cmd+S`
 
 ```
 ultralytics>=8.3,<9
@@ -125,113 +183,124 @@ Pillow>=10,<13
 pytesseract>=0.3.10,<1
 ```
 
-Simpan file (`Ctrl+S`).
-
 ---
 
-## LANGKAH 5 — Install Dependencies
+## LANGKAH 6 — Install Dependencies
 
+Pastikan `(.venv)` aktif di terminal, lalu:
+
+**🪟 Windows & 🍎 macOS (perintah sama):**
 ```bash
 pip install -r requirements.txt
 ```
 
-Proses ini mengunduh dan menginstall:
-- `ultralytics` — YOLO object detection AI
-- `opencv-python` — baca webcam dan proses gambar
-- `Pillow` — render frame ke GUI Tkinter
-- `pytesseract` — OCR (opsional)
-
-Tunggu **3–7 menit** hingga selesai. Output normal:
+Tunggu **3–10 menit** hingga selesai. Output normal di akhir proses:
 ```
 Successfully installed ultralytics-X.X opencv-python-X.X Pillow-X.X ...
 ```
 
+> **🍎 macOS — jika muncul error `error: command 'gcc' failed`:**
+> ```bash
+> xcode-select --install
+> ```
+> Tunggu instalasi Xcode Command Line Tools selesai, lalu ulangi `pip install`.
+
+> **🪟 Windows — jika muncul error `Microsoft Visual C++ required`:**
+> Download dan install **Microsoft C++ Build Tools** dari:
+> https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
 ---
 
-## LANGKAH 6 — Buat File `data/catalog.json`
+## LANGKAH 7 — Buat Struktur Folder & File
 
-Buat folder `data/` di dalam proyek, lalu buat file `catalog.json`:
+### Buat folder `data/`, `output/`, `tests/`
+
+**🪟 Windows (PowerShell):**
+```powershell
+mkdir data, output, tests
+```
+
+**🍎 macOS / Linux:**
+```bash
+mkdir -p data output tests
+```
+
+Atau buat manual: klik kanan di panel kiri VS Code → **New Folder**.
+
+---
+
+### Buat `data/catalog.json`
+
+Klik folder `data` di VS Code → **New File** → beri nama `catalog.json`.  
+Salin dan tempel seluruh isi di bawah ini, lalu simpan:
 
 ```json
 {
-  "_comment": "Mapping YOLO class ke produk nyata Indonesia",
+  "_comment": "Mapping YOLO class (COCO) ke produk nyata e-commerce Indonesia",
 
-  "bottle":     {"sku":"MNM-001","product":"Aqua Botol Mineral 600ml",         "brand":"Aqua",      "price_idr":4500,   "category":"Minuman"},
-  "cup":        {"sku":"MNM-002","product":"Mie Sedaap Cup Ayam 75g",           "brand":"Wings Food","price_idr":5500,   "category":"Makanan Instan"},
-  "book":       {"sku":"ATK-001","product":"Buku Tulis Sinar Dunia 58 Lembar",  "brand":"Sinar Dunia","price_idr":7500,  "category":"Alat Tulis"},
-  "cell phone": {"sku":"ELK-001","product":"Samsung Galaxy A15",                "brand":"Samsung",   "price_idr":1899000,"category":"Smartphone"},
-  "laptop":     {"sku":"ELK-002","product":"ASUS VivoBook 14 Intel i3",         "brand":"ASUS",      "price_idr":5499000,"category":"Laptop"},
-  "keyboard":   {"sku":"ELK-003","product":"Keyboard Logitech K120 USB",        "brand":"Logitech",  "price_idr":175000, "category":"Aksesoris"},
-  "mouse":      {"sku":"ELK-004","product":"Mouse Wireless Logitech M170",      "brand":"Logitech",  "price_idr":149000, "category":"Aksesoris"},
-  "scissors":   {"sku":"ATK-002","product":"Gunting Joyko SC-809",              "brand":"Joyko",     "price_idr":18500,  "category":"Alat Tulis"},
-  "banana":     {"sku":"BSY-001","product":"Pisang Ambon Lokal (per 100g)",     "brand":"Lokal",     "price_idr":3000,   "category":"Buah & Sayur"},
-  "apple":      {"sku":"BSY-002","product":"Apel Fuji Import (per 100g)",       "brand":"Import",    "price_idr":4500,   "category":"Buah & Sayur"},
-  "orange":     {"sku":"BSY-003","product":"Jeruk Medan Manis (per 100g)",      "brand":"Lokal",     "price_idr":3500,   "category":"Buah & Sayur"},
-  "carrot":     {"sku":"BSY-004","product":"Wortel Segar (per 100g)",           "brand":"Lokal",     "price_idr":2000,   "category":"Buah & Sayur"},
-  "remote":     {"sku":"ELK-005","product":"Remote TV Universal RM-L1268",      "brand":"Universal", "price_idr":35000,  "category":"Elektronik"},
-  "clock":      {"sku":"ELK-006","product":"Jam Dinding Deli 12 Inch",          "brand":"Deli",      "price_idr":89000,  "category":"Elektronik"},
-  "bowl":       {"sku":"RMH-001","product":"Mangkok Melamin Lion Star 15cm",    "brand":"Lion Star", "price_idr":12000,  "category":"Dapur"},
-  "sandwich":   {"sku":"MKN-001","product":"Roti Tawar Sari Roti Jumbo 650g",   "brand":"Sari Roti", "price_idr":22500,  "category":"Makanan"},
-  "pizza":      {"sku":"MKN-002","product":"Frozen Pizza Belfoods Royal 135g",  "brand":"Belfoods",  "price_idr":35000,  "category":"Makanan Beku"},
-  "cake":       {"sku":"MKN-003","product":"Bolu Gulung Nabati Richeese",       "brand":"Nabati",    "price_idr":18000,  "category":"Snack"},
-  "vase":       {"sku":"RMH-002","product":"Vas Bunga Keramik Dekorasi",        "brand":"Ikea",      "price_idr":79000,  "category":"Dekorasi"},
-  "fork":       {"sku":"RMH-003","product":"Garpu Makan Stainless Steel 6 pcs", "brand":"Zebra",     "price_idr":32000,  "category":"Dapur"}
+  "bottle":     {"sku":"MNM-001","product":"Aqua Botol Mineral 600ml",        "brand":"Aqua",       "price_idr":4500,    "category":"Minuman"},
+  "cup":        {"sku":"MNM-002","product":"Mie Sedaap Cup Ayam 75g",          "brand":"Wings Food", "price_idr":5500,    "category":"Makanan Instan"},
+  "book":       {"sku":"ATK-001","product":"Buku Tulis Sinar Dunia 58 Lembar", "brand":"Sinar Dunia","price_idr":7500,    "category":"Alat Tulis"},
+  "cell phone": {"sku":"ELK-001","product":"Samsung Galaxy A15",               "brand":"Samsung",    "price_idr":1899000, "category":"Smartphone"},
+  "laptop":     {"sku":"ELK-002","product":"ASUS VivoBook 14 Intel i3",        "brand":"ASUS",       "price_idr":5499000, "category":"Laptop"},
+  "keyboard":   {"sku":"ELK-003","product":"Keyboard Logitech K120 USB",       "brand":"Logitech",   "price_idr":175000,  "category":"Aksesoris Komputer"},
+  "mouse":      {"sku":"ELK-004","product":"Mouse Wireless Logitech M170",     "brand":"Logitech",   "price_idr":149000,  "category":"Aksesoris Komputer"},
+  "scissors":   {"sku":"ATK-002","product":"Gunting Joyko SC-809",             "brand":"Joyko",      "price_idr":18500,   "category":"Alat Tulis"},
+  "banana":     {"sku":"BSY-001","product":"Pisang Ambon Lokal (per 100g)",    "brand":"Lokal",      "price_idr":3000,    "category":"Buah & Sayur"},
+  "apple":      {"sku":"BSY-002","product":"Apel Fuji Import (per 100g)",      "brand":"Import",     "price_idr":4500,    "category":"Buah & Sayur"},
+  "orange":     {"sku":"BSY-003","product":"Jeruk Medan Manis (per 100g)",     "brand":"Lokal",      "price_idr":3500,    "category":"Buah & Sayur"},
+  "carrot":     {"sku":"BSY-004","product":"Wortel Segar (per 100g)",          "brand":"Lokal",      "price_idr":2000,    "category":"Buah & Sayur"},
+  "remote":     {"sku":"ELK-005","product":"Remote TV Universal RM-L1268",     "brand":"Universal",  "price_idr":35000,   "category":"Elektronik"},
+  "clock":      {"sku":"ELK-006","product":"Jam Dinding Deli 12 Inch",         "brand":"Deli",       "price_idr":89000,   "category":"Elektronik"},
+  "bowl":       {"sku":"RMH-001","product":"Mangkok Melamin Lion Star 15cm",   "brand":"Lion Star",  "price_idr":12000,   "category":"Peralatan Dapur"},
+  "sandwich":   {"sku":"MKN-001","product":"Roti Tawar Sari Roti Jumbo 650g",  "brand":"Sari Roti",  "price_idr":22500,   "category":"Makanan"},
+  "pizza":      {"sku":"MKN-002","product":"Frozen Pizza Belfoods Royal 135g", "brand":"Belfoods",   "price_idr":35000,   "category":"Makanan Beku"},
+  "cake":       {"sku":"MKN-003","product":"Bolu Gulung Nabati Richeese",      "brand":"Nabati",     "price_idr":18000,   "category":"Snack"},
+  "vase":       {"sku":"RMH-002","product":"Vas Bunga Keramik Dekorasi",       "brand":"Ikea",       "price_idr":79000,   "category":"Dekorasi"},
+  "fork":       {"sku":"RMH-003","product":"Garpu Makan Stainless Steel 6pcs", "brand":"Zebra",      "price_idr":32000,   "category":"Peralatan Dapur"}
 }
 ```
 
 ---
 
-## LANGKAH 7 — Buat File `app.py`
+## LANGKAH 8 — Unduh `app.py` dan `test_business.py`
 
-Buat file `app.py` di root folder. Ini adalah aplikasi utama.
+**🪟 Windows (PowerShell):**
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py" -OutFile "app.py"
 
-> 📌 **Salin kode dari repo GitHub:**
-> Buka https://github.com/triandessinaga/ComputerVision/blob/main/app.py
-> Klik tombol **Raw** → Select All → Copy → Paste ke file `app.py` Anda → Simpan
-
-Atau unduh langsung:
-```bash
-curl -o app.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py" -OutFile "tests/test_business.py"
 ```
 
----
-
-## LANGKAH 8 — Buat File `tests/test_business.py`
-
-Buat folder `tests/` lalu buat file `test_business.py`:
-
-> 📌 Salin dari: https://github.com/triandessinaga/ComputerVision/blob/main/tests/test_business.py
-
-Atau unduh:
+**🍎 macOS / Linux:**
 ```bash
-mkdir tests
+curl -o app.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py
+
 curl -o tests/test_business.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py
 ```
 
----
-
-## LANGKAH 9 — Buat Folder Output
-
-```bash
-mkdir output
-```
-
-Atau buat manual lewat File Explorer — buat folder bernama `output` di dalam proyek.
+**Cara manual (semua OS — jika perintah di atas gagal):**
+1. Buka https://github.com/triandessinaga/ComputerVision/blob/main/app.py
+2. Klik **Raw** (pojok kanan atas halaman)
+3. `Ctrl+A` → `Ctrl+C` (Windows) atau `Cmd+A` → `Cmd+C` (Mac) → Select All & Copy
+4. Di VS Code buat file `app.py` → Paste → Simpan
+5. Ulangi untuk `tests/test_business.py`
 
 ---
 
-## LANGKAH 10 — Verifikasi
-
-Jalankan unit tests untuk memastikan semua berjalan:
+## LANGKAH 9 — Verifikasi Instalasi
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
+> **🍎 macOS:** Gunakan `python3` jika `python` tidak dikenali.
+
 Harus muncul:
 ```
-test_all_have_required_fields ... ok
 test_all_prices_positive ... ok
+test_catalog_not_empty ... ok
+test_sum_equals_input ... ok
 ...
 Ran 18 tests in 0.001s
 OK
@@ -239,29 +308,42 @@ OK
 
 ---
 
-## LANGKAH 11 — Jalankan Aplikasi! 🚀
+## LANGKAH 10 — Jalankan Aplikasi! 🚀
 
+**🪟 Windows:**
 ```bash
 python app.py
 ```
 
-Saat pertama kali, YOLO mengunduh model AI (~50MB) secara otomatis.
-Tunggu hingga jendela GUI terbuka.
+**🍎 macOS:**
+```bash
+python3 app.py
+```
+
+Pertama kali jalan: YOLO mengunduh model AI (~50MB) — butuh internet sekali.  
+Tunggu hingga jendela GUI terbuka (±30 detik).
+
+> **🍎 macOS — Kamera tidak terbuka?**  
+> Buka **System Settings** → **Privacy & Security** → **Camera**  
+> → aktifkan izin untuk **Terminal** atau **Python**
+
+> **🪟 Windows — Kamera tidak terbuka?**  
+> Buka **Settings** → **Privacy & Security** → **Camera**  
+> → pastikan **"Let desktop apps access your camera"** aktif
 
 **Struktur folder Anda sekarang:**
 ```
 SmartRetail/
-├── .venv/
-├── app.py
-├── requirements.txt
+├── .venv/               ← virtual environment (jangan diedit manual)
+├── app.py               ← aplikasi utama
+├── requirements.txt     ← daftar library
 ├── data/
-│   └── catalog.json
-├── output/
+│   └── catalog.json     ← 20 produk (boleh diedit harga/namanya)
+├── output/              ← hasil transaksi & inspeksi (otomatis terisi)
 └── tests/
-    └── test_business.py
-```
+    └── test_business.py ← 18 unit tests
 
----
+```
 
 # 📖 BAGIAN 2 — PANDUAN PRAKTIKUM
 
