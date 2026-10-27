@@ -6,6 +6,9 @@
 # ── Dokumen internal (dosen only, jangan publish) ────────────────
 README_DOSEN.md
 
+# ── Folder docs/ sudah disatukan ke README.md ────────────────────
+docs/
+
 # ── Python bytecode ───────────────────────────────────────────────
 __pycache__/
 *.py[cod]
