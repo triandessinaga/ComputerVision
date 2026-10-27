@@ -2,180 +2,163 @@
 ### AI Computer Vision for Business — Praktikum Mandiri
 
 [![Python](https://img.shields.io/badge/Python-3.10--3.12-blue?logo=python)](https://python.org)
-[![YOLO](https://img.shields.io/badge/YOLO-Ultralytics-orange)](https://ultralytics.com)
+[![YOLO](https://img.shields.io/badge/YOLO-Ultralytics%2011-orange)](https://ultralytics.com)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.8+-green)](https://opencv.org)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
 
-> **Mata Kuliah:** AI untuk Bisnis / Sistem Informasi  
-> **Dosen:** Triandes Sinaga  
-> **Durasi:** 150 menit praktikum + 120 menit tugas sawit  
-> **Level:** Pemula — tidak perlu GPU, tidak perlu pengalaman AI
+> **Mata Kuliah:** AI untuk Bisnis / Sistem Informasi
+> **Dosen:** Triandes Sinaga
+> **Durasi:** 150 menit praktikum + 120 menit tugas sawit
+> **Level:** Pemula — tidak perlu GPU, tidak perlu pengalaman AI sebelumnya
 
 ---
 
 ## 🎯 Apa yang Akan Dibangun?
 
 Aplikasi desktop **real-time** yang menggunakan kamera laptop untuk:
-- Mendeteksi produk dengan AI (YOLO)
-- Mencocokkan ke produk nyata e-commerce Indonesia
-- Mencatat ke keranjang belanja dengan konfirmasi operator
-- Menghasilkan **struk `.txt`** + **data CSV** siap analisis Excel
+
+- Mendeteksi produk dengan AI (YOLO) — **tanpa training ulang**
+- Mencocokkan hasil deteksi ke **20 produk nyata** e-commerce Indonesia
+- Mencatat ke keranjang belanja dengan **konfirmasi operator**
+- Menghasilkan **struk `.txt`** dan **data CSV** siap analisis di Excel
 
 ```
-Webcam → YOLO AI → Produk Terdeteksi → [SPACE] → Keranjang → [C] Checkout → CSV + Struk
+Webcam → YOLO AI → Produk Terdeteksi → [SPACE] konfirmasi
+       → Keranjang → [C] Checkout → Struk + CSV
 ```
 
 ---
 
-# 🛠️ BAGIAN 1 — BANGUN DARI NOL
+## 📋 Daftar Isi
 
-> Jalur utama — Anda memahami setiap bagian sistem dari awal.
-> Panduan tersedia untuk **Windows** dan **macOS**.
-> Jika ada kendala teknis, gunakan **Bagian 4 (Clone)** sebagai jalan pintas.
-
----
-
-## LANGKAH 1 — Cek / Install Python
-
-### Cek apakah Python sudah terpasang
-
-| OS | Buka terminal | Perintah |
-|----|---------------|---------|
-| 🪟 Windows | PowerShell atau CMD | `py --version` |
-| 🍎 macOS | Terminal (`Cmd+Space` → ketik `Terminal`) | `python3 --version` |
-
-Hasil yang diharapkan: `Python 3.10.x` atau lebih baru.  
-Jika muncul **error** atau versi lama → install Python dulu.
+1. [Persiapan Sistem](#1-persiapan-sistem)
+2. [Bangun dari Nol — Windows](#2-bangun-dari-nol--windows)
+3. [Bangun dari Nol — macOS](#3-bangun-dari-nol--macos)
+4. [Clone dari GitHub (Alternatif Cepat)](#4-clone-dari-github--alternatif-cepat)
+5. [Keyboard Shortcuts](#5-keyboard-shortcuts)
+6. [Katalog Produk](#6-katalog-produk)
+7. [Panduan Praktikum](#7-panduan-praktikum)
+8. [Tugas Sawit](#8-tugas-sawit)
+9. [Troubleshooting](#9-troubleshooting)
 
 ---
 
-### Install Python (jika belum ada)
+## 1. Persiapan Sistem
 
-**🪟 Windows:**
-1. Buka **https://python.org/downloads**
-2. Klik tombol besar **"Download Python 3.12.x"**
-3. Jalankan file `.exe` yang diunduh
-4. ⚠️ **WAJIB centang "Add Python to PATH"** di bagian bawah installer
-5. Klik **Install Now** → tunggu selesai
-6. Tutup dan buka ulang PowerShell
-7. Verifikasi: `py --version` → harus muncul versi Python
+### Yang Dibutuhkan
 
-**🍎 macOS (Pilihan A — Homebrew, direkomendasikan):**
-```bash
-# Install Homebrew dulu jika belum ada
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+| Kebutuhan | Spesifikasi Minimum |
+|-----------|-------------------|
+| OS | Windows 10/11 atau macOS 12+ |
+| Python | Versi 3.10, 3.11, atau 3.12 |
+| RAM | 4 GB (8 GB lebih baik) |
+| Disk | 2 GB ruang kosong |
+| Webcam | Kamera bawaan laptop sudah cukup |
+| Internet | Dibutuhkan sekali saat setup (~300MB download) |
 
-# Install Python
-brew install python@3.12
+### Yang Perlu Diinstall
 
-# Verifikasi
-python3 --version
+- **Python 3.10–3.12** — bahasa pemrograman
+- **VS Code** — editor kode (bisa pakai editor lain)
+- **Library Python** — diinstall otomatis via `pip`
+- **Model YOLO** — diunduh otomatis saat pertama jalan
+
+---
+
+## 2. Bangun dari Nol — Windows
+
+> Ikuti langkah ini jika pakai **Windows 10 atau Windows 11**.
+> Semua perintah dijalankan di **PowerShell** atau **Command Prompt**.
+
+---
+
+### 2.1 Install Python
+
+**Cek dulu apakah Python sudah ada:**
+
+Buka **PowerShell** (tekan `Windows+R` → ketik `powershell` → Enter):
+```
+py --version
 ```
 
-**🍎 macOS (Pilihan B — Installer langsung):**
-1. Buka **https://python.org/downloads/macos**
-2. Download **macOS 64-bit universal2 installer**
-3. Jalankan file `.pkg` → ikuti wizard
-4. Buka Terminal → verifikasi: `python3 --version`
+Jika muncul `Python 3.10.x` atau lebih baru → **lanjut ke 2.2**.
+
+**Jika belum ada atau versi lama:**
+
+1. Buka browser → pergi ke **https://python.org/downloads**
+2. Klik tombol biru besar **"Download Python 3.12.x"**
+3. Buka file `.exe` yang sudah diunduh
+4. ⚠️ **WAJIB centang kotak "Add Python to PATH"** di bagian paling bawah halaman pertama installer
+5. Klik **"Install Now"**
+6. Tunggu hingga muncul pesan "Setup was successful"
+7. Klik **Close**
+8. **Tutup** PowerShell lama → **buka PowerShell baru**
+9. Ketik lagi: `py --version` → harus muncul versinya
 
 ---
 
-## LANGKAH 2 — Install VS Code
+### 2.2 Install VS Code
 
-Download di **https://code.visualstudio.com/download**
-
-| OS | Yang diunduh | Cara install |
-|----|-------------|-------------|
-| 🪟 Windows | File `.exe` | Jalankan installer, klik Next–Next–Finish |
-| 🍎 macOS | File `.zip` | Extract → drag **Visual Studio Code.app** ke folder **Applications** |
-
-**Install Python Extension di VS Code:**
-1. Tekan `Ctrl+Shift+X` (Windows) atau `Cmd+Shift+X` (Mac)
-2. Cari **Python** → pilih yang dari **Microsoft** → klik **Install**
+1. Buka **https://code.visualstudio.com/download**
+2. Klik **"Windows"** → unduh file `.exe`
+3. Jalankan installer → klik **Next** terus → klik **Install** → **Finish**
+4. Buka VS Code
+5. Tekan `Ctrl+Shift+X` → cari **Python** → pilih ekstensi dari **Microsoft** → klik **Install**
 
 ---
 
-## LANGKAH 3 — Siapkan Folder Proyek
+### 2.3 Buat Folder Proyek
 
-**🪟 Windows:**
-1. Buka **File Explorer** → navigasi ke Drive C atau D
-2. Klik kanan di area kosong → **New** → **Folder**
-3. Beri nama `SmartRetail`
-4. Contoh lokasi: `C:\Users\NamaAnda\Documents\SmartRetail`
+1. Buka **File Explorer** (`Windows+E`)
+2. Navigasi ke lokasi yang mudah diingat, contoh: `C:\Users\NamaAnda\Documents`
+3. Klik kanan di area kosong → **New** → **Folder**
+4. Beri nama: `SmartRetail`
 
-**🍎 macOS:**
-1. Buka **Finder** → navigasi ke **Documents** atau Desktop
-2. Klik kanan di area kosong → **New Folder**
-3. Beri nama `SmartRetail`
-4. Contoh lokasi: `/Users/NamaAnda/Documents/SmartRetail`
-
-**Buka di VS Code:**
-1. Buka VS Code → `File` → `Open Folder`
-2. Pilih folder `SmartRetail`
-3. Buka terminal baru: menu `Terminal` → `New Terminal`
+**Buka folder di VS Code:**
+1. Buka VS Code
+2. Klik `File` → `Open Folder`
+3. Pilih folder `SmartRetail` → klik **Select Folder**
+4. Buka terminal: klik `Terminal` → `New Terminal`
 
 ---
 
-## LANGKAH 4 — Buat Virtual Environment
+### 2.4 Buat Virtual Environment
 
-Virtual environment = ruang terisolasi agar library tidak bercampur antar proyek.
-
-**🪟 Windows (PowerShell):**
-```bash
+Di terminal VS Code (pastikan Anda berada di dalam folder `SmartRetail`):
+```
 py -3 -m venv .venv
 ```
 
-**🍎 macOS / Linux:**
-```bash
-python3 -m venv .venv
+Folder `.venv` akan muncul di panel kiri VS Code.
+
+**Aktifkan virtual environment:**
 ```
-
-Folder `.venv` akan muncul di dalam proyek Anda.
-
----
-
-### Aktifkan Virtual Environment
-
-**🪟 Windows — PowerShell:**
-```bash
 .\.venv\Scripts\Activate.ps1
 ```
 
-> Jika muncul error *"cannot be loaded because running scripts is disabled"*:
-> ```powershell
-> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-> ```
-> Ketik `Y` → Enter → coba aktifkan lagi.
+Jika muncul error **"execution of scripts is disabled"**:
+```
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+Ketik `Y` → tekan Enter → coba aktifkan lagi.
 
-**🪟 Windows — Command Prompt (CMD):**
-```bash
+**Alternatif menggunakan CMD:**
+```
 .venv\Scripts\activate.bat
 ```
 
-**🍎 macOS / Linux:**
-```bash
-source .venv/bin/activate
+✅ **Berhasil** jika terminal berubah menjadi:
 ```
-
-**✅ Berhasil** jika terminal menampilkan `(.venv)` di awal baris:
+(.venv) PS C:\Users\NamaAnda\Documents\SmartRetail>
 ```
-(.venv) PS C:\Users\Anda\SmartRetail>       ← Windows PowerShell
-(.venv) C:\Users\Anda\SmartRetail>          ← Windows CMD
-(.venv) anda@MacBook SmartRetail %          ← macOS
-```
-
-> ⚠️ **Penting:** Setiap kali membuka terminal baru, aktifkan ulang virtual environment!
 
 ---
 
-## LANGKAH 5 — Buat File `requirements.txt`
+### 2.5 Buat File `requirements.txt`
 
-Di VS Code, klik ikon **New File** (atas panel kiri) → beri nama `requirements.txt`.  
-Isi dengan baris berikut, lalu simpan:
+Di VS Code, klik ikon **New File** (atas panel Explorer kiri) → ketik `requirements.txt` → Enter.
 
-- Windows: `Ctrl+S`
-- macOS: `Cmd+S`
-
+Isi file dengan teks berikut:
 ```
 ultralytics>=8.3,<9
 opencv-python>=4.8,<5
@@ -183,60 +166,55 @@ Pillow>=10,<13
 pytesseract>=0.3.10,<1
 ```
 
+Simpan dengan `Ctrl+S`.
+
 ---
 
-## LANGKAH 6 — Install Dependencies
+### 2.6 Install Dependencies
 
-Pastikan `(.venv)` aktif di terminal, lalu:
-
-**🪟 Windows & 🍎 macOS (perintah sama):**
-```bash
+Di terminal (pastikan ada tanda `(.venv)`):
+```
 pip install -r requirements.txt
 ```
 
-Tunggu **3–10 menit** hingga selesai. Output normal di akhir proses:
+Proses ini mengunduh dan menginstall 4 library utama:
+
+| Library | Fungsi |
+|---------|--------|
+| `ultralytics` | Model AI YOLO untuk deteksi objek |
+| `opencv-python` | Baca webcam dan proses gambar |
+| `Pillow` | Tampilkan frame kamera di GUI Tkinter |
+| `pytesseract` | OCR (baca teks dari gambar, opsional) |
+
+Tunggu **5–10 menit**. Selesai jika muncul:
 ```
-Successfully installed ultralytics-X.X opencv-python-X.X Pillow-X.X ...
+Successfully installed ultralytics-X.X opencv-python-X.X ...
 ```
 
-> **🍎 macOS — jika muncul error `error: command 'gcc' failed`:**
-> ```bash
-> xcode-select --install
-> ```
-> Tunggu instalasi Xcode Command Line Tools selesai, lalu ulangi `pip install`.
-
-> **🪟 Windows — jika muncul error `Microsoft Visual C++ required`:**
-> Download dan install **Microsoft C++ Build Tools** dari:
-> https://visualstudio.microsoft.com/visual-cpp-build-tools/
+> Jika muncul error **"Microsoft Visual C++ 14.0 required"**:
+> Download **Build Tools** di https://visualstudio.microsoft.com/visual-cpp-build-tools/
+> Centang **"C++ build tools"** → Install → ulangi `pip install`.
 
 ---
 
-## LANGKAH 7 — Buat Struktur Folder & File
+### 2.7 Buat Struktur Folder
 
-### Buat folder `data/`, `output/`, `tests/`
-
-**🪟 Windows (PowerShell):**
-```powershell
+Di terminal:
+```
 mkdir data, output, tests
 ```
 
-**🍎 macOS / Linux:**
-```bash
-mkdir -p data output tests
-```
-
-Atau buat manual: klik kanan di panel kiri VS Code → **New Folder**.
-
 ---
 
-### Buat `data/catalog.json`
+### 2.8 Buat `data\catalog.json`
 
-Klik folder `data` di VS Code → **New File** → beri nama `catalog.json`.  
-Salin dan tempel seluruh isi di bawah ini, lalu simpan:
+Di VS Code: klik folder `data` → ikon **New File** → ketik `catalog.json` → Enter.
+
+Salin seluruh teks JSON di bawah ini dan tempel ke file tersebut, lalu simpan `Ctrl+S`:
 
 ```json
 {
-  "_comment": "Mapping YOLO class (COCO) ke produk nyata e-commerce Indonesia",
+  "_comment": "Mapping YOLO class (COCO dataset) ke produk nyata e-commerce Indonesia",
 
   "bottle":     {"sku":"MNM-001","product":"Aqua Botol Mineral 600ml",        "brand":"Aqua",       "price_idr":4500,    "category":"Minuman"},
   "cup":        {"sku":"MNM-002","product":"Mie Sedaap Cup Ayam 75g",          "brand":"Wings Food", "price_idr":5500,    "category":"Makanan Instan"},
@@ -249,7 +227,7 @@ Salin dan tempel seluruh isi di bawah ini, lalu simpan:
   "banana":     {"sku":"BSY-001","product":"Pisang Ambon Lokal (per 100g)",    "brand":"Lokal",      "price_idr":3000,    "category":"Buah & Sayur"},
   "apple":      {"sku":"BSY-002","product":"Apel Fuji Import (per 100g)",      "brand":"Import",     "price_idr":4500,    "category":"Buah & Sayur"},
   "orange":     {"sku":"BSY-003","product":"Jeruk Medan Manis (per 100g)",     "brand":"Lokal",      "price_idr":3500,    "category":"Buah & Sayur"},
-  "carrot":     {"sku":"BSY-004","product":"Wortel Segar (per 100g)",          "brand":"Lokal",      "price_idr":2000,    "category":"Buah & Sayur"},
+  "carrot":     {"sku":"BSY-004","product":"Wortel Segar Kupas (per 100g)",    "brand":"Lokal",      "price_idr":2000,    "category":"Buah & Sayur"},
   "remote":     {"sku":"ELK-005","product":"Remote TV Universal RM-L1268",     "brand":"Universal",  "price_idr":35000,   "category":"Elektronik"},
   "clock":      {"sku":"ELK-006","product":"Jam Dinding Deli 12 Inch",         "brand":"Deli",       "price_idr":89000,   "category":"Elektronik"},
   "bowl":       {"sku":"RMH-001","product":"Mangkok Melamin Lion Star 15cm",   "brand":"Lion Star",  "price_idr":12000,   "category":"Peralatan Dapur"},
@@ -263,107 +241,348 @@ Salin dan tempel seluruh isi di bawah ini, lalu simpan:
 
 ---
 
-## LANGKAH 8 — Unduh `app.py` dan `test_business.py`
+### 2.9 Unduh `app.py` dan File Test
 
-**🪟 Windows (PowerShell):**
+Di terminal PowerShell:
 ```powershell
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py" -OutFile "app.py"
 
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py" -OutFile "tests/test_business.py"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py" -OutFile "tests\test_business.py"
 ```
 
-**🍎 macOS / Linux:**
+**Jika perintah di atas gagal (cara manual):**
+1. Buka https://github.com/triandessinaga/ComputerVision
+2. Klik file `app.py` → klik tombol **Raw** (pojok kanan atas)
+3. `Ctrl+A` → `Ctrl+C` (copy semua)
+4. Di VS Code buat file `app.py` → `Ctrl+V` → `Ctrl+S`
+5. Ulangi untuk `tests/test_business.py`
+
+---
+
+### 2.10 Verifikasi dan Jalankan
+
+**Verifikasi instalasi:**
+```
+python -m unittest discover -s tests -v
+```
+
+Harus muncul: `Ran 18 tests in 0.001s — OK`
+
+**Jalankan aplikasi:**
+```
+python app.py
+```
+
+Model YOLO (~50MB) diunduh otomatis pertama kali. Tunggu jendela GUI terbuka.
+
+> Jika kamera tidak terbuka: **Settings** → **Privacy & Security** → **Camera**
+> → aktifkan **"Let desktop apps access your camera"**
+
+---
+
+## 3. Bangun dari Nol — macOS
+
+> Ikuti langkah ini jika pakai **macOS Monterey (12) atau lebih baru**.
+> Semua perintah dijalankan di **Terminal**.
+> Buka Terminal: tekan `Cmd+Space` → ketik `Terminal` → Enter.
+
+---
+
+### 3.1 Install Python
+
+**Cek dulu apakah Python sudah ada:**
+```bash
+python3 --version
+```
+
+Jika muncul `Python 3.10.x` atau lebih baru → **lanjut ke 3.2**.
+
+**Install via Homebrew (direkomendasikan):**
+```bash
+# Langkah 1: Install Homebrew (package manager macOS)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Ikuti instruksi di layar, masukkan password Mac jika diminta
+
+# Langkah 2: Install Python
+brew install python@3.12
+
+# Langkah 3: Verifikasi
+python3 --version
+```
+
+**Install via installer langsung (tanpa Homebrew):**
+1. Buka **https://python.org/downloads/macos**
+2. Download **"macOS 64-bit universal2 installer"** untuk Python 3.12
+3. Buka file `.pkg` → ikuti wizard → klik **Continue** dan **Install**
+4. Buka Terminal baru → ketik `python3 --version`
+
+---
+
+### 3.2 Install VS Code
+
+1. Buka **https://code.visualstudio.com/download**
+2. Klik **"Mac"** → unduh file `.zip`
+3. Buka file `.zip` → drag **Visual Studio Code.app** ke folder **Applications**
+4. Buka VS Code dari **Applications** atau Spotlight (`Cmd+Space` → ketik `Code`)
+5. Tekan `Cmd+Shift+X` → cari **Python** → pilih dari **Microsoft** → **Install**
+
+**Tambahkan VS Code ke PATH** (agar bisa buka dari terminal):
+1. Di VS Code tekan `Cmd+Shift+P`
+2. Ketik: `Shell Command: Install 'code' command in PATH`
+3. Tekan Enter
+
+---
+
+### 3.3 Buat Folder Proyek
+
+Di Terminal:
+```bash
+# Buat folder di Documents
+mkdir -p ~/Documents/SmartRetail
+
+# Masuk ke folder
+cd ~/Documents/SmartRetail
+
+# Buka di VS Code
+code .
+```
+
+Atau cara manual:
+1. Buka **Finder** → navigasi ke **Documents**
+2. `Cmd+Shift+N` → buat folder baru → beri nama `SmartRetail`
+3. Di VS Code: `File` → `Open Folder` → pilih `SmartRetail`
+
+---
+
+### 3.4 Buat Virtual Environment
+
+Di terminal VS Code (menu `Terminal` → `New Terminal`):
+```bash
+python3 -m venv .venv
+```
+
+**Aktifkan virtual environment:**
+```bash
+source .venv/bin/activate
+```
+
+✅ **Berhasil** jika terminal berubah menjadi:
+```
+(.venv) nama@MacBook SmartRetail %
+```
+
+> ⚠️ Setiap kali membuka terminal baru, jalankan lagi `source .venv/bin/activate`
+
+---
+
+### 3.5 Buat File `requirements.txt`
+
+Di VS Code: klik ikon **New File** → ketik `requirements.txt` → Enter.
+
+Isi:
+```
+ultralytics>=8.3,<9
+opencv-python>=4.8,<5
+Pillow>=10,<13
+pytesseract>=0.3.10,<1
+```
+
+Simpan dengan `Cmd+S`.
+
+---
+
+### 3.6 Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Tunggu **5–10 menit**.
+
+> Jika muncul error **"error: command 'gcc' failed"** atau **"Xcode required"**:
+> ```bash
+> xcode-select --install
+> ```
+> Klik **Install** di dialog yang muncul → tunggu selesai (~15 menit) → ulangi `pip install`.
+
+---
+
+### 3.7 Buat Struktur Folder
+
+```bash
+mkdir -p data output tests
+```
+
+---
+
+### 3.8 Buat `data/catalog.json`
+
+Di VS Code: klik folder `data` → **New File** → `catalog.json`.
+
+Salin isi JSON yang sama seperti di **bagian 2.8** di atas → `Cmd+V` → `Cmd+S`.
+
+---
+
+### 3.9 Unduh `app.py` dan File Test
+
 ```bash
 curl -o app.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py
 
 curl -o tests/test_business.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py
 ```
 
-**Cara manual (semua OS — jika perintah di atas gagal):**
-1. Buka https://github.com/triandessinaga/ComputerVision/blob/main/app.py
-2. Klik **Raw** (pojok kanan atas halaman)
-3. `Ctrl+A` → `Ctrl+C` (Windows) atau `Cmd+A` → `Cmd+C` (Mac) → Select All & Copy
-4. Di VS Code buat file `app.py` → Paste → Simpan
-5. Ulangi untuk `tests/test_business.py`
+**Jika curl gagal (cara manual):**
+Sama seperti di bagian 2.9, buka GitHub → Raw → `Cmd+A` → `Cmd+C` → paste ke VS Code.
 
 ---
 
-## LANGKAH 9 — Verifikasi Instalasi
+### 3.10 Verifikasi dan Jalankan
 
+**Verifikasi:**
 ```bash
-python -m unittest discover -s tests -v
+python3 -m unittest discover -s tests -v
 ```
 
-> **🍎 macOS:** Gunakan `python3` jika `python` tidak dikenali.
+Harus muncul: `Ran 18 tests in 0.001s — OK`
 
-Harus muncul:
-```
-test_all_prices_positive ... ok
-test_catalog_not_empty ... ok
-test_sum_equals_input ... ok
-...
-Ran 18 tests in 0.001s
-OK
-```
-
----
-
-## LANGKAH 10 — Jalankan Aplikasi! 🚀
-
-**🪟 Windows:**
-```bash
-python app.py
-```
-
-**🍎 macOS:**
+**Jalankan:**
 ```bash
 python3 app.py
 ```
 
-Pertama kali jalan: YOLO mengunduh model AI (~50MB) — butuh internet sekali.  
-Tunggu hingga jendela GUI terbuka (±30 detik).
+> **Kamera tidak terbuka di macOS?**
+> Buka **System Settings** → **Privacy & Security** → **Camera**
+> → aktifkan izin untuk **Terminal** dan/atau **Python**
+> → tutup dan buka ulang Terminal → jalankan lagi
 
-> **🍎 macOS — Kamera tidak terbuka?**  
-> Buka **System Settings** → **Privacy & Security** → **Camera**  
-> → aktifkan izin untuk **Terminal** atau **Python**
+---
 
-> **🪟 Windows — Kamera tidak terbuka?**  
-> Buka **Settings** → **Privacy & Security** → **Camera**  
-> → pastikan **"Let desktop apps access your camera"** aktif
+## 4. Clone dari GitHub — Alternatif Cepat
 
-**Struktur folder Anda sekarang:**
+> Gunakan cara ini jika:
+> - Waktu terbatas dan ingin langsung mencoba
+> - Ada kendala teknis saat bangun dari nol
+> - Ingin memastikan kode yang dipakai sama persis dengan repositori resmi
+
+### Install Git
+
+**🪟 Windows:** Download di https://git-scm.com/download/win → install dengan pengaturan default
+
+**🍎 macOS:** Git biasanya sudah tersedia. Cek: `git --version`
+Jika belum: `brew install git` atau `xcode-select --install`
+
+---
+
+### Clone dan Setup
+
+**🪟 Windows (PowerShell):**
+```powershell
+git clone https://github.com/triandessinaga/ComputerVision.git
+cd ComputerVision
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python app.py
 ```
-SmartRetail/
-├── .venv/               ← virtual environment (jangan diedit manual)
-├── app.py               ← aplikasi utama
-├── requirements.txt     ← daftar library
-├── data/
-│   └── catalog.json     ← 20 produk (boleh diedit harga/namanya)
-├── output/              ← hasil transaksi & inspeksi (otomatis terisi)
-└── tests/
-    └── test_business.py ← 18 unit tests
 
+**🍎 macOS / Linux:**
+```bash
+git clone https://github.com/triandessinaga/ComputerVision.git
+cd ComputerVision
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 -m unittest discover -s tests -v
+python3 app.py
 ```
 
-# 📖 BAGIAN 2 — PANDUAN PRAKTIKUM
+### Perbandingan: Bangun Sendiri vs Clone
 
-## 🧠 Konsep Dasar (10 menit)
+| Aspek | Bangun dari Nol | Clone dari GitHub |
+|-------|----------------|-------------------|
+| Waktu setup | 30–45 menit | 10–15 menit |
+| Pemahaman kode | ✅ Lebih dalam | Langsung jalan |
+| Risiko typo | Ada (perlu teliti) | Tidak ada |
+| Cocok untuk | Belajar mendalam | Demo cepat |
 
-### Cara Kerja Sistem
+> 💡 Apapun caranya, semua eksperimen dan tugas sawit tetap harus dikerjakan sendiri.
+
+---
+
+## 5. Keyboard Shortcuts
+
+Setelah aplikasi terbuka, shortcut ini aktif **selama jendela GUI dalam fokus**
+(klik area jendela aplikasi dulu sebelum menekan tombol):
+
+| Tombol | Aksi | Kapan Dipakai |
+|--------|------|---------------|
+| `SPACE` | ✅ Tambah produk terdeteksi ke keranjang | Saat kamera aktif & objek terdeteksi |
+| `TAB` | 🔄 Ganti ke deteksi berikutnya | Jika ada > 1 objek di frame |
+| `U` | ↩ Undo — hapus item terakhir dari keranjang | Jika salah tambah |
+| `C` | 💳 Buka dialog Checkout + kembalian | Saat keranjang sudah terisi |
+| `N` | 🔄 Reset — kosongkan keranjang | Mulai transaksi baru |
+| `S` | 💾 Simpan inspeksi ke CSV | Untuk mencatat tanpa checkout |
+| `Q` | 🚪 Keluar dari aplikasi | — |
+| `Esc` | 🚪 Keluar dari aplikasi | — |
+
+---
+
+## 6. Katalog Produk
+
+20 produk dipetakan dari kelas YOLO COCO ke produk nyata yang tersedia di Tokopedia, Shopee, dan Alfamart/Indomaret:
+
+| YOLO Class | Produk | Brand | Harga |
+|------------|--------|-------|-------|
+| `cell phone` | Samsung Galaxy A15 | Samsung | Rp 1.899.000 |
+| `laptop` | ASUS VivoBook 14 Intel i3 | ASUS | Rp 5.499.000 |
+| `keyboard` | Keyboard Logitech K120 USB | Logitech | Rp 175.000 |
+| `mouse` | Mouse Wireless Logitech M170 | Logitech | Rp 149.000 |
+| `bottle` | Aqua Botol Mineral 600ml | Aqua | Rp 4.500 |
+| `cup` | Mie Sedaap Cup Ayam Spesial 75g | Wings Food | Rp 5.500 |
+| `book` | Buku Tulis Sinar Dunia 58 Lembar | Sinar Dunia | Rp 7.500 |
+| `scissors` | Gunting Joyko SC-809 All Purpose | Joyko | Rp 18.500 |
+| `banana` | Pisang Ambon Lokal (per 100g) | Lokal | Rp 3.000 |
+| `apple` | Apel Fuji Import (per 100g) | Import | Rp 4.500 |
+| `orange` | Jeruk Medan Manis (per 100g) | Lokal | Rp 3.500 |
+| `carrot` | Wortel Segar Kupas (per 100g) | Lokal | Rp 2.000 |
+| `remote` | Remote TV Universal RM-L1268 | Universal | Rp 35.000 |
+| `clock` | Jam Dinding Deli 12 Inch | Deli | Rp 89.000 |
+| `bowl` | Mangkok Melamin Lion Star 15cm | Lion Star | Rp 12.000 |
+| `sandwich` | Roti Tawar Sari Roti Jumbo 650g | Sari Roti | Rp 22.500 |
+| `pizza` | Frozen Pizza Belfoods Royal 135g | Belfoods | Rp 35.000 |
+| `cake` | Bolu Gulung Nabati Richeese | Nabati | Rp 18.000 |
+| `vase` | Vas Bunga Keramik Dekorasi | Ikea | Rp 79.000 |
+| `fork` | Garpu Makan Stainless Steel 6pcs | Zebra | Rp 32.000 |
+
+**Kelas yang diabaikan secara otomatis:**
+`person`, `car`, `bicycle`, `chair`, `couch`, `dog`, `cat`, dan 47 kelas lain
+dari COCO dataset — tidak akan masuk keranjang meski terdeteksi di frame.
+
+**Edit harga atau nama produk:**
+Buka `data/catalog.json` → ubah nilai `price_idr` atau `product` → simpan → jalankan ulang.
+
+---
+
+## 7. Panduan Praktikum
+
+### 7.1 Cara Kerja Sistem
 
 ```
-┌──────────┐    ┌─────────────────┐    ┌────────────────────────┐
-│  Webcam  │───▶│   YOLO Model    │───▶│    catalog.json        │
-│  Laptop  │    │  (AI Deteksi)   │    │  (Pemetaan Bisnis)     │
-└──────────┘    └─────────────────┘    └────────────────────────┘
-                       │                          │
-                 "bottle" 0.87          "Aqua 600ml — Rp 4.500"
-                       │
-                [SPACE] ← Anda konfirmasi dulu
-                       │
-             ┌─────────▼──────────┐
-             │     Keranjang      │──▶ [C] Checkout ──▶ CSV + Struk
-             └────────────────────┘
+┌──────────┐    ┌───────────────────┐    ┌─────────────────────────┐
+│  Webcam  │───▶│   YOLO Model      │───▶│    catalog.json         │
+│  Laptop  │    │  (AI Detection)   │    │  (Business Mapping)     │
+└──────────┘    └───────────────────┘    └─────────────────────────┘
+                        │                           │
+                  "bottle" 0.87          "Aqua 600ml — Rp 4.500"
+                        │                      Brand: Aqua
+                        │
+                 SPACE ← Operator konfirmasi
+                        │
+             ┌──────────▼──────────┐
+             │     Keranjang       │──▶ [C] Checkout ──▶ CSV + Struk
+             └─────────────────────┘
 ```
 
 ### Kosakata Penting
@@ -371,82 +590,57 @@ SmartRetail/
 | Istilah | Artinya |
 |---------|---------|
 | **Frame** | 1 foto dari video (30 foto/detik = 30 FPS) |
-| **Bounding Box** | Kotak yang mengelilingi objek terdeteksi |
-| **YOLO Class** | Kategori objek: `bottle`, `book`, `cell phone`, dll |
-| **Confidence** | Skor keyakinan AI: `0.87` = 87% yakin |
-| **Blacklist** | Kelas diabaikan: `person`, `car`, `chair`, dll |
+| **Bounding Box** | Kotak yang mengelilingi objek yang terdeteksi |
+| **YOLO Class** | Nama kategori objek: `bottle`, `book`, `person`, dll |
+| **Confidence** | Skor keyakinan AI: `0.87` artinya 87% yakin |
+| **COCO** | Dataset 80 kategori benda yang dipakai melatih model YOLO |
+| **Blacklist** | Kelas yang sengaja diabaikan agar tidak masuk keranjang |
 
-### ⚠️ Batasan Penting
+### ⚠️ Batasan yang Wajib Dipahami
 
-> Model mengenali **kategori generik**, bukan merek.
-> `cell phone` bisa Samsung, iPhone, atau Xiaomi — AI tidak tahu bedanya.
-> Itulah mengapa operator **wajib konfirmasi** (`SPACE`) sebelum data masuk.
-
----
-
-## ⌨️ Keyboard Shortcuts
-
-| Tombol | Aksi |
-|--------|------|
-| `SPACE` | ✅ Tambah produk terdeteksi ke keranjang |
-| `TAB` | 🔄 Ganti pilihan deteksi (jika > 1 objek) |
-| `U` | ↩ Undo item terakhir |
-| `C` | 💳 Checkout + kalkulator kembalian |
-| `N` | 🔄 Reset keranjang |
-| `S` | 💾 Simpan inspeksi ke CSV |
-| `Q` / `Esc` | 🚪 Keluar |
+> Model YOLO ini mengenali **kategori generik**, bukan merek spesifik.
+> `cell phone` bisa Samsung, iPhone, atau Xiaomi — AI tidak bisa membedakan.
+> Itulah mengapa operator **wajib menekan SPACE** sebagai konfirmasi sebelum data masuk.
+> Sistem ini adalah **prototipe pendidikan**, bukan kasir produksi.
 
 ---
 
-## 🔧 Mode Jalankan
+### 7.2 Tahap A — Kenali Aplikasi (0–20 menit)
 
-```bash
-python app.py                    # webcam default
-python app.py --camera 1         # webcam ke-2
-python app.py --image foto.jpg   # gambar statis (tanpa webcam)
-python app.py --conf 0.30        # lebih sensitif mendeteksi
+**Layout GUI:**
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  🔍 Smart Retail Inspector          👤 OPERATOR-01   🕐 Waktu    │
+├───────────────────────────┬──────────────────────────────────────┤
+│  📷 AI Kamera  │📋 Katalog │       🛒 Keranjang Belanja           │
+│  ┌─────────────┐ 🎥Kontrol │  Produk     Qty   Harga   Subtotal  │
+│  │             │ ──────── │  ─────────────────────────────────  │
+│  │  KAMERA     │ ▶Aktifkan │                                     │
+│  │  LIVE (16:9)│ ■ Stop   │                                     │
+│  │             │ ──────── │  Total:               Rp 0          │
+│  └─────────────┘ 🎯Deteksi│  [💳 CHECKOUT  [C]]                  │
+│  ✅ Feedback     ⌨Shortcut │  [🔄 Reset     [N]]                  │
+└───────────────────────────┴──────────────────────────────────────┘
 ```
 
----
-
-## TAHAP A — Kenali Aplikasi (0–20 menit)
-
-### Layout GUI
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│  🔍 Smart Retail Inspector         👤 OPERATOR-01   🕐 Waktu   │
-├──────────────────────────┬─────────────────────────────────────┤
-│  📷 AI Kamera  │📋 Katalog│       🛒 Keranjang Belanja          │
-│  ┌────────────┐  🎥Kontrol│                                    │
-│  │            │  ▶Aktifkan│  Produk   Qty   Harga   Subtotal  │
-│  │  KAMERA    │  ■ Stop   │  ─────────────────────────────── │
-│  │  LIVE 16:9 │           │                                    │
-│  │            │  🎯Deteksi│  Total:              Rp 0          │
-│  └────────────┘  ⌨Shortcut│  [💳 CHECKOUT  [C]]               │
-│  ✅ Feedback     TERLIHAT  │  [🔄 Reset     [N]]               │
-└──────────────────────────┴─────────────────────────────────────┘
-```
-
-### Coba Pertama
-
+**Langkah pertama:**
 1. Klik tab **📷 AI Kamera**
-2. Klik **▶ Aktifkan Kamera** di panel kanan
-3. Arahkan botol air ke webcam (jarak 30–60 cm, cahaya cukup)
-4. Panel **🎯 Deteksi Sekarang** menampilkan nama produk + confidence
-5. Tekan `SPACE` → produk masuk keranjang
-6. Tekan `C` → lihat dialog checkout dengan kembalian
+2. Klik tombol **▶ Aktifkan Kamera** (di panel kanan kamera)
+3. Arahkan **botol air** ke webcam — jarak ideal 30–60 cm, cahaya cukup
+4. Panel **🎯 Deteksi Sekarang** akan menampilkan nama produk + confidence
+5. Tekan `SPACE` → produk masuk keranjang kanan
+6. Tekan `C` → dialog checkout terbuka dengan kembalian otomatis
 
-**📸 Checkpoint A:** Screenshot GUI dengan bounding box aktif dan 1 produk di keranjang.
+📸 **Checkpoint A:** Screenshot GUI dengan bounding box aktif dan 1 produk di keranjang.
 
 ---
 
-## TAHAP B — Eksperimen (20–70 menit)
+### 7.3 Tahap B — Eksperimen (20–70 menit)
 
-### Tabel Eksperimen (isi minimal 6 baris)
+**Tabel eksperimen — isi minimal 6 baris:**
 
 | # | Objek Fisik | YOLO Class | Produk di App | Conf | Kondisi | ✓/✗ |
-|---|-------------|-----------|---------------|------|---------|------|
+|---|-------------|-----------|---------------|------|---------|-----|
 | 1 | Botol air | `bottle` | Aqua Mineral 600ml | 0.__ | Cahaya normal | |
 | 2 | Buku | `book` | Buku Tulis Sinar Dunia | 0.__ | Cahaya normal | |
 | 3 | Ponsel | `cell phone` | Samsung Galaxy A15 | 0.__ | Cahaya normal | |
@@ -454,35 +648,35 @@ python app.py --conf 0.30        # lebih sensitif mendeteksi
 | 5 | Buku | `book` | | | Tertutup sebagian | |
 | 6 | Bebas | | | | Kondisi pilihan Anda | |
 
-### Hitung Success Rate
-
+**Hitung:**
 ```
 Success Rate = (jumlah ✓) ÷ (total percobaan) × 100%
 ```
 
 **Pertanyaan:**
-1. Kondisi apa yang membuat confidence paling tinggi?
-2. Kondisi apa yang paling sering gagal?
-3. Jika confidence = 0.42, percayakah Anda untuk transaksi uang nyata?
+1. Kondisi apa yang menghasilkan confidence paling tinggi?
+2. Kondisi apa yang paling sering gagal atau salah?
+3. Jika confidence = 0.42, apakah Anda akan percaya hasilnya untuk transaksi nyata?
 
-**📸 Checkpoint B:** Tabel terisi + angka success rate.
+📸 **Checkpoint B:** Tabel terisi + angka success rate.
 
 ---
 
-## TAHAP C — Transaksi Lengkap (70–90 menit)
+### 7.4 Tahap C — Transaksi Lengkap (70–90 menit)
 
-1. Scan **2× botol** → `SPACE` dua kali
-2. Tab **📋 Katalog** → double-click `book` → tambah 1
-3. Tekan `C` → masukkan bayar: `50000`
-4. Lihat kembalian + rincian pecahan uang otomatis
+1. Scan **2× botol air** → tekan `SPACE` dua kali
+2. Pindah ke tab **📋 Katalog** → cari `book` → double-click → tambah 1
+3. Tekan `C` (Checkout) → masukkan nominal bayar: misalnya `50000`
+4. Lihat **kembalian otomatis** + rincian **pecahan uang**
 5. Klik **✓ Proses Pembayaran**
 
-### Cek Output di Folder `output/`
-
+**Cek output yang dihasilkan:**
 ```
-output/transactions.csv      ← Buka di Excel
-output/inspections.csv       ← Log dari [S]
-output/receipts/INV-*.txt    ← Struk teks
+output/
+├── transactions.csv    ← buka dengan Excel atau Google Sheets
+├── inspections.csv     ← log dari tombol [S]
+└── receipts/
+    └── INV-*.txt       ← struk teks
 ```
 
 **Contoh baris `transactions.csv`:**
@@ -490,428 +684,349 @@ output/receipts/INV-*.txt    ← Struk teks
 INV-20261027-103500, OPERATOR-01, MNM-001,
 Aqua Botol Mineral 600ml, 2, 4500, 9000, 50000, 41000
 ```
-*2 × Rp 4.500 = Rp 9.000 | Bayar Rp 50.000 | Kembalian Rp 41.000*
+*2 botol × Rp 4.500 = Rp 9.000 | Bayar Rp 50.000 | Kembalian Rp 41.000*
 
-### Edit Harga Produk
+**Coba edit harga:**
+Buka `data/catalog.json` → ubah `"price_idr": 4500` pada `bottle` menjadi `6000`
+→ simpan → jalankan ulang → scan botol → harga di keranjang berubah menjadi Rp 6.000 ✅
 
-Buka `data/catalog.json`, ubah `price_idr` pada `bottle` dari `4500` → `6000`.
-Simpan → jalankan ulang → scan botol → harga jadi Rp 6.000. ✅
-
-**📸 Checkpoint C:** Screenshot checkout + CSV di Excel.
+📸 **Checkpoint C:** Screenshot dialog checkout + CSV terbuka di Excel.
 
 ---
 
-## TAHAP D — Privacy Detective (90–100 menit)
+### 7.5 Tahap D — Privacy Detective (90–100 menit)
 
-| # | Skenario | Status | Alasan |
-|---|----------|--------|--------|
+Tentukan status setiap skenario: **Aman / Perlu Izin / Dilarang**
+
+| # | Skenario | Status | Alasan Singkat |
+|---|----------|--------|----------------|
 | 1 | Scan botol Aqua, tidak ada orang di frame | | |
-| 2 | Webcam menangkap wajah pelanggan | | |
-| 3 | Scan struk yang ada nomor telepon | | |
-| 4 | Foto rak produk tanpa orang | | |
-| 5 | Rekam video kasir seharian tanpa izin | | |
+| 2 | Webcam menangkap wajah pelanggan di belakang produk | | |
+| 3 | Scan struk belanja yang ada nomor telepon pemilik | | |
+| 4 | Foto rak produk di toko tanpa ada orang | | |
+| 5 | Rekam video aktivitas kasir seharian tanpa izin mereka | | |
+
+**Cek langsung:** Buka folder `output/` — apakah ada foto wajah tersimpan saat tekan `S`?
 
 ---
 
-## TAHAP E — Business Studio (100–120 menit)
+### 7.6 Tahap E — Business Studio (100–120 menit)
 
-### Buat Diagram Alur
-
+**Buat diagram alur sistem:**
 ```
-Kamera → [YOLO] → person/chair → DIABAIKAN
-                → bottle/book  → Catalog Match
-                                      │
-                               Operator [SPACE]
-                                      │
-                               Keranjang [C]
-                                      │
-                         ┌────────────┴──────────┐
-                         ▼                        ▼
-                 transactions.csv           Struk .txt
-                         │
-                         ▼
-                  Excel / Dashboard
+Kamera
+  │
+  ▼
+[YOLO Detection]
+  │
+  ├──▶ person / chair / car ──▶ DIABAIKAN (blacklist 54 kelas)
+  │
+  └──▶ bottle / book / phone ──▶ Cocok di catalog.json
+                                        │
+                                Panel "Deteksi Sekarang"
+                                (nama produk + harga + brand)
+                                        │
+                              Operator tekan [SPACE]
+                                        │
+                                  Keranjang Belanja
+                                        │
+                              Operator tekan [C]
+                                        │
+                        ┌──────────────┴──────────────┐
+                        ▼                              ▼
+                transactions.csv               Struk .txt
+                        │
+                        ▼
+                Excel / Dashboard Manajer
 ```
 
-| Pertanyaan | Jawaban |
-|------------|---------|
-| Aktor dalam sistem | |
-| 3 data wajib per transaksi | |
-| 2 validasi sebelum simpan | |
-| 1 KPI dari CSV | |
-| 2 risiko utama | |
+**Isi tabel analisis:**
+
+| Pertanyaan | Jawaban Anda |
+|------------|-------------|
+| Siapa saja aktor dalam sistem? | |
+| 3 data wajib setiap transaksi | |
+| 2 validasi sebelum data disimpan | |
+| 1 KPI yang bisa diukur dari CSV | |
+| 2 risiko utama sistem ini | |
 
 ---
 
-## TAHAP F — Refleksi (120–130 menit)
+### 7.7 Tahap F — Refleksi (120–130 menit)
 
-1. **Kapan model gagal?** — 1 kondisi nyata dari eksperimen Anda
-2. **Konsekuensi bisnis?** — `laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500)?
-3. **Mengapa operator konfirmasi?** — Pro dan kontra jika dibuat otomatis
-4. **Siap produksi?** — 3 hal yang harus ditambah
+Jawab **4 pertanyaan** ini, minimal 2–3 kalimat per jawaban:
+
+**1. Kapan model gagal?**
+Deskripsikan 1 kondisi nyata dari eksperimen Anda di mana AI salah atau tidak mendeteksi.
+
+**2. Konsekuensi bisnis jika salah?**
+`laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500) dan langsung diproses — apa kerugiannya? Siapa yang dirugikan?
+
+**3. Mengapa operator harus konfirmasi?**
+Sistem meminta `SPACE` sebelum menambah item. Apakah lebih baik dibuat otomatis?
+Berikan argumen pro dan kontra.
+
+**4. Apa yang perlu ditambah untuk produksi nyata?**
+Sebutkan **3 hal konkret** yang harus ada sebelum bisa dipakai di kasir toko sesungguhnya.
 
 ---
 
-## 🎮 Retail AI Quest — Kumpulkan XP!
+### 7.8 Retail AI Quest — Kumpulkan XP!
 
 | Level | Tantangan | XP |
 |-------|-----------|-----|
-| 🟢 **Starter** | GUI aktif + bounding box terlihat | 10 |
-| 🔵 **Explorer** | Deteksi 3 jenis produk berbeda | 15 |
-| 🟡 **Analyst** | Tabel 6 eksperimen + success rate | 20 |
-| 🟠 **Developer** | Edit catalog + transaksi + CSV valid | 25 |
-| 🔴 **Business Boss** | Diagram sistem + KPI + 2 risiko | 20 |
-| ⭐ **Privacy Guardian** | Privacy Detective semua dijawab | 10 |
-| 🏆 **BONUS** | Tambah 1 produk baru ke catalog.json | +10 |
+| 🟢 Starter | GUI aktif + bounding box terlihat | 10 |
+| 🔵 Explorer | Deteksi 3 jenis produk berbeda | 15 |
+| 🟡 Analyst | Tabel 6 eksperimen + success rate dihitung | 20 |
+| 🟠 Developer | Edit catalog.json + transaksi + CSV valid | 25 |
+| 🔴 Business Boss | Diagram sistem + KPI + 2 risiko | 20 |
+| ⭐ Privacy Guardian | Privacy Detective 5 skenario dijawab | 10 |
+| 🏆 BONUS | Tambah 1 produk baru ke catalog.json | +10 |
 
-**Total: 100 XP = nilai penuh**
+**Total: 100 XP = nilai penuh** *(+10 XP bonus)*
 
 ---
 
-## 📦 Yang Dikumpulkan ke Moodle
+### 7.9 Yang Dikumpulkan ke Moodle
 
-Buat ZIP: **`NamaNIM_SmartRetail.zip`**
+Buat ZIP bernama: **`NamaNIM_SmartRetail.zip`**
 
 ```
-✅ screenshot_A_gui.png              GUI aktif + bounding box
-✅ screenshot_C_checkout.png         Dialog checkout + kembalian
-✅ screenshot_C_csv_excel.png        CSV di Excel
-✅ tabel_eksperimen.pdf              6+ baris + success rate
-✅ diagram_sistem.png                Dari Tahap E
-✅ refleksi.pdf                      4 jawaban Tahap F
-✅ privacy_detective.pdf             Tabel 5 skenario
-✅ sawit/ (folder)                   Tugas SawitVision (lihat bagian bawah)
+✅ screenshot_A_gui.png           GUI aktif + bounding box
+✅ screenshot_C_checkout.png      Dialog checkout + kembalian
+✅ screenshot_C_csv_excel.png     transactions.csv di Excel
+✅ tabel_eksperimen.pdf           6+ baris + success rate
+✅ diagram_sistem.png             Diagram dari Tahap E
+✅ refleksi.pdf                   4 jawaban Tahap F
+✅ privacy_detective.pdf          Tabel 5 skenario + alasan
+✅ sawit/ (folder)                Output tugas sawit
 ```
 
----
-
-## 🆘 Troubleshooting
-
-| Masalah | Solusi |
-|---------|--------|
-| `ModuleNotFoundError: cv2` | `pip install opencv-python` |
-| `ModuleNotFoundError: ultralytics` | `pip install ultralytics` |
-| `ModuleNotFoundError: PIL` | `pip install Pillow` |
-| Kamera hitam / tidak buka | Tutup Zoom/Teams · Settings → Privacy → Camera |
-| Kamera tidak ditemukan | `python app.py --camera 1` |
-| Tombol keyboard tidak respons | Klik jendela GUI dulu, bukan terminal |
-| Objek tidak terdeteksi | Tambah cahaya · jarak 30–60 cm · `--conf 0.25` |
-| FPS lambat | Normal di CPU · tutup app berat lain |
-| Download model gagal | Butuh internet ~50MB sekali saja |
-| Tidak punya webcam | `python app.py --image foto_produk.jpg` |
+> ⚠️ Hapus atau blur wajah dan data pribadi sebelum mengumpulkan!
 
 ---
 
-# 🌴 BAGIAN 3 — TUGAS SAWIT
-### Transfer Konsep: dari Retail ke Industri Kelapa Sawit
+## 8. Tugas Sawit
 
-> **Durasi:** 120 menit di luar jam kelas  
-> **Bobot:** 30% dari total nilai  
-> **Tidak perlu coding** — fokus pada pemahaman konsep bisnis dan AI
+### Konteks Bisnis
 
----
+Indonesia adalah produsen minyak sawit terbesar di dunia (±47 juta ton/tahun).
+Kualitas CPO bergantung pada ketepatan grading **Tandan Buah Segar (TBS)** di loading ramp.
 
-## 🎯 Mengapa Sawit?
-
-Indonesia adalah **produsen minyak sawit terbesar di dunia** (±47 juta ton/tahun).
-Kualitas CPO (Crude Palm Oil) sangat bergantung pada ketepatan grading
-**Tandan Buah Segar (TBS)** di loading ramp pabrik.
-
-**Masalah nyata saat ini:**
-- Grading dilakukan manual oleh petugas — subjektif dan tidak konsisten
-- Petugas shift pagi vs malam bisa beri grade berbeda untuk TBS yang sama
-- Tidak ada rekam data digital → susah dianalisis oleh manajemen
-- Skala besar: ratusan ton TBS masuk per hari per pabrik
-
-**Pertanyaan bisnis:** Bisakah AI seperti yang Anda pakai hari ini membantu?
-
----
-
-## 🧠 Konsep Kunci — Baca Dulu (15 menit)
+**Masalah saat ini:**
+- Grading manual oleh petugas — subjektif dan tidak konsisten antar shift
+- Tidak ada data digital → susah dianalisis manajemen
+- Skala besar: ratusan ton TBS masuk per hari
 
 ### Kelas Kematangan TBS
 
-| Kelas | Tampilan Visual | Nilai Bisnis |
-|-------|----------------|-------------|
-| 🟢 **Unripe (Mentah)** | Warna hitam/hijau, sedikit brondolan | Minyak rendah, harga rendah |
-| 🟡 **Ripe (Matang)** | Warna jingga/merah, brondolan berjatuhan | Minyak optimal, harga terbaik |
-| 🔴 **Overripe (Lewat Matang)** | Brondolan banyak jatuh, warna gelap | Asam lemak bebas tinggi, kualitas turun |
+| Kelas | Tampilan | Nilai Bisnis |
+|-------|---------|-------------|
+| 🟢 Unripe (Mentah) | Warna hitam/hijau, sedikit brondolan | Minyak rendah, harga rendah |
+| 🟡 Ripe (Matang) | Warna jingga/merah, brondolan berjatuhan | Minyak optimal, harga terbaik |
+| 🔴 Overripe (Lewat Matang) | Banyak brondolan jatuh, warna gelap | Asam lemak bebas tinggi, kualitas turun |
 
-**Dampak salah grade:**
+### Skema SawitVision
 
-> Jika 10 ton TBS matang salah diklasifikasikan sebagai mentah →
-> selisih harga bisa Rp 200.000–500.000/ton →
-> kerugian Rp 2–5 juta **per kejadian**.
-> Jika terjadi 5× sehari = Rp 10–25 juta/hari.
-
-### Mengapa Model Retail Kita Tidak Bisa Dipakai Langsung?
-
-Model YOLO yang kita pakai dilatih dengan **80 kategori COCO** (botol, buku, orang, dll).
-TBS sawit **tidak ada** dalam dataset COCO.
-
-> Ini bukan kegagalan — ini pelajaran penting:
-> **Model generik tidak bisa otomatis dipakai di domain khusus.**
-> Butuh data domain spesifik dan proses training/fine-tuning.
+```
+TBS di        ┌─────────┐   ┌─────────────────┐   ┌──────────────────┐
+Loading  ────▶│ Kamera  │──▶│  YOLO Custom    │──▶│ Petugas Validasi │
+Ramp          │ IP / HD │   │ (TBS Dataset!)  │   │  Human-in-Loop   │
+              └─────────┘   └─────────────────┘   └────────┬─────────┘
+                                                            │
+                                                            ▼
+                                                   ┌────────────────┐
+                                                   │   Database     │──▶ Dashboard QC
+                                                   └────────────────┘
+```
 
 ---
 
-## 📂 LANGKAH 1 — Lihat Dataset Publik TBS (20 menit)
+### Langkah 1 — Lihat Dataset Publik TBS (20 menit)
 
-Kita akan menggunakan dataset **yang sudah ada** — tidak perlu kumpulkan foto sendiri.
+Kita gunakan dataset **yang sudah tersedia** — tidak perlu kumpulkan foto sendiri.
 
-### Dataset yang Bisa Digunakan
+**Akses Roboflow Universe:**
+1. Buka **https://universe.roboflow.com**
+2. Di kolom pencarian ketik: `oil palm bunch`
+3. Pilih dataset yang muncul, contoh: *Oil Palm Fresh Fruit Bunch*
+4. Klik tab **Images** → lihat contoh foto TBS yang sudah berlabel
+5. Klik tab **Classes** → lihat kategori (Ripe, Unripe, Overripe)
 
-**Pilihan A — Roboflow Universe (Recommended)**
-
-1. Buka browser → pergi ke: **https://universe.roboflow.com**
-2. Di kolom pencarian, ketik: `oil palm bunch`
-3. Pilih salah satu dataset yang muncul, misalnya:
-   - **"Oil Palm Fresh Fruit Bunch"** — 3 kelas, 1200+ gambar
-   - **"Palm Oil Detection"** — deteksi TBS di kebun
-4. Klik dataset → lihat tab **Images** untuk melihat contoh foto
-5. Lihat tab **Classes** untuk melihat kategori yang ada
-
-**Catat di laporan Anda:**
+**Yang dicatat di laporan:**
 - Nama dataset yang dipilih
 - Jumlah gambar total
 - Kelas/kategori yang tersedia
-- Link URL dataset
+- URL dataset
 
-**Pilihan B — Kaggle**
-
-1. Buka: **https://www.kaggle.com/datasets**
-2. Search: `palm oil fresh fruit bunch` atau `TBS sawit`
-3. Pilih dataset yang relevan → lihat gambar contohnya
+**Alternatif — Kaggle:**
+1. Buka **https://www.kaggle.com/datasets**
+2. Cari: `palm oil fresh fruit bunch`
 
 ---
 
-## 🔬 LANGKAH 2 — Eksperimen Sederhana (20 menit)
+### Langkah 2 — Eksperimen Scan Foto TBS (20 menit)
 
-Kita akan lihat apa yang terjadi jika foto TBS di-scan dengan aplikasi kita.
+Download 3 foto dari dataset Roboflow (klik kanan gambar → **Save Image As**):
+- 1 foto TBS **matang** (warna jingga/merah)
+- 1 foto TBS **mentah** (warna hitam/hijau)
+- 1 foto TBS yang **sulit dinilai**
 
-### Cara Mendapatkan Foto TBS
+Scan dengan aplikasi:
 
-Dari dataset Roboflow yang Anda temukan di Langkah 1:
-- Klik tab **Images** → klik kanan salah satu foto → **Save Image As**
-- Simpan 3 foto: 1 TBS matang, 1 mentah, 1 yang tidak jelas
-
-Atau download contoh foto dari Google Images (cari: `oil palm fresh fruit bunch`).
-
-### Jalankan di Aplikasi
-
-```bash
-# Pastikan virtual environment aktif dulu
+**🪟 Windows:**
+```
 python app.py --image foto_tbs_matang.jpg
 ```
 
-### Catat Hasilnya
+**🍎 macOS:**
+```bash
+python3 app.py --image foto_tbs_matang.jpg
+```
 
-| # | Nama File Foto | Terdeteksi Sebagai | Confidence | Ada di Catalog? |
-|---|---------------|-------------------|-----------|----------------|
+Catat hasilnya:
+
+| # | Nama File | Terdeteksi Sebagai | Confidence | Ada di Catalog? |
+|---|-----------|-------------------|-----------|----------------|
 | 1 | foto_tbs_matang.jpg | | | Ya / Tidak |
 | 2 | foto_tbs_mentah.jpg | | | Ya / Tidak |
 | 3 | foto_tbs_sulit.jpg | | | Ya / Tidak |
 
-**Pertanyaan — jawab di laporan:**
-
-> 1. Apa yang model deteksi dari foto TBS? Apakah relevan?
-> 2. Mengapa model COCO tidak bisa mengenali TBS dengan tepat?
-> 3. Apa artinya ini untuk bisnis sawit yang mau pakai AI?
+**Pertanyaan (jawab di laporan):**
+1. Apa yang dideteksi model dari foto TBS? Apakah relevan?
+2. Mengapa model COCO tidak bisa mengenali TBS dengan tepat?
+3. Apa artinya ini untuk perusahaan sawit yang mau pakai AI?
 
 ---
 
-## 🏗️ LANGKAH 3 — Rancang Sistem SawitVision (40 menit)
+### Langkah 3 — Rancang Sistem SawitVision (40 menit)
 
-Tidak perlu coding. Cukup **gambar dan jelaskan** sistem yang Anda usulkan.
+Tidak perlu coding. Cukup **gambar dan jelaskan** sistem yang diusulkan.
 
-### Skema Sistem
+**Tabel perbandingan — isi kolom kanan:**
 
-```
-Truk TBS         ┌──────────┐   ┌─────────────────┐
-tiba di    ─────▶│  Kamera  │──▶│   AI Model      │
-Loading          │  IP/HD   │   │ (Khusus TBS!)   │
-Ramp             └──────────┘   └────────┬────────┘
-                                         │
-                                  Hasil Prediksi:
-                              "Ripe — conf: 0.89"
-                                         │
-                              ┌──────────▼──────────┐
-                              │  Petugas Validasi   │
-                              │  Lihat layar →      │
-                              │  Tekan KONFIRMASI   │
-                              └──────────┬──────────┘
-                                         │
-                               ┌─────────▼──────────┐
-                               │    Database         │
-                               │  (Grade + Berat +   │
-                               │   Timestamp + Foto) │
-                               └─────────┬───────────┘
-                                         │
-                              ┌──────────▼──────────┐
-                              │  Dashboard Manajer  │
-                              │  - Total TBS hari ini│
-                              │  - % per kelas grade │
-                              │  - Trend kualitas    │
-                              └─────────────────────┘
-```
-
-### Isi Tabel Perbandingan
-
-| Aspek | Smart Retail Inspector (sudah kita buat) | SawitVision (yang Anda usulkan) |
-|-------|----------------------------------------|--------------------------------|
+| Aspek | Smart Retail Inspector (sudah jalan) | SawitVision (usulan Anda) |
+|-------|--------------------------------------|--------------------------|
 | Objek yang dideteksi | Botol, buku, ponsel (COCO) | |
-| Model AI yang dipakai | Pretrained COCO, generik | |
-| Sumber data training | Dataset COCO (80 kelas umum) | |
+| Model AI | Pretrained COCO, generik | |
+| Data training | 80 kelas COCO, jutaan gambar | |
 | Cara operator konfirmasi | Tekan `SPACE` di laptop | |
 | Data yang disimpan | CSV: produk, qty, harga, struk | |
 | Lingkungan operasi | Indoor, meja kasir, cahaya stabil | |
 | Skala | 1 kasir, puluhan produk/hari | |
 
-### Jawab Pertanyaan Bisnis
+**Jawab pertanyaan bisnis (2–4 kalimat masing-masing):**
 
-Jawab setiap pertanyaan dalam **2–4 kalimat**:
-
-**Q1: Mengapa tidak bisa langsung pakai model retail kita untuk sawit?**
-
-**Q2: Data apa saja yang harus dikumpulkan sebelum sistem bisa dibangun?**
-(Petunjuk: lihat dataset Roboflow yang Anda temukan di Langkah 1 sebagai referensi)
-
-**Q3: Siapa saja yang terlibat dalam sistem ini?**
-(Operator kamera, petugas validasi, manajer pabrik, siapa lagi?)
-
-**Q4: Apa 2 manfaat utama untuk bisnis perusahaan sawit?**
-
-**Q5: Apa 2 risiko jika sistem ini diterapkan tanpa persiapan matang?**
+1. Mengapa tidak bisa langsung pakai model retail kita untuk sawit?
+2. Data apa yang harus dikumpulkan sebelum sistem bisa dibangun? *(referensi: dataset Roboflow di Langkah 1)*
+3. Siapa saja yang terlibat dalam sistem SawitVision?
+4. Apa 2 manfaat utama untuk bisnis perusahaan sawit?
+5. Apa 2 risiko jika sistem diterapkan tanpa persiapan matang?
 
 ---
 
-## ✅ LANGKAH 4 — Refleksi Singkat (25 menit)
+### Langkah 4 — Refleksi (25 menit)
 
-Jawab **3 pertanyaan** berikut, masing-masing **3–5 kalimat**:
+Jawab 3 pertanyaan berikut, masing-masing 3–5 kalimat:
 
 **Refleksi 1 — Teknologi**
-
 Dari percobaan di Langkah 2, model tidak mengenali TBS dengan tepat.
-Apa yang harus dilakukan pengembang untuk membuat model yang bisa mengenali TBS?
-Jelaskan dengan bahasa sederhana (tidak perlu istilah teknis yang rumit).
+Apa yang harus dilakukan untuk membuat model yang bisa mengenali TBS?
+Jelaskan dengan bahasa sederhana.
 
 **Refleksi 2 — Bisnis**
-
-Seandainya sistem SawitVision berhasil dibangun dengan akurasi 90%,
-apa keputusan bisnis yang bisa diambil manajer dari data yang terkumpul?
+Jika SawitVision berhasil dibangun dengan akurasi 90%, keputusan bisnis apa
+yang bisa diambil manajer dari data yang terkumpul?
 Berikan 2 contoh keputusan konkret.
 
-**Refleksi 3 — Manusia & Etika**
-
-Kamera di loading ramp merekam aktivitas pekerja setiap hari.
-Sistem AI juga "menggantikan" sebagian pekerjaan petugas grading manual.
-
-- Apa yang perlu dipersiapkan perusahaan agar pekerja menerima sistem ini?
+**Refleksi 3 — Etika**
+Kamera di loading ramp merekam pekerja setiap hari.
+- Apa yang perlu disiapkan perusahaan agar pekerja menerima sistem ini?
 - Siapa yang bertanggung jawab jika AI salah grade dan perusahaan rugi?
 
 ---
 
-## 📦 Yang Dikumpulkan (Tugas Sawit)
+### Output Tugas Sawit
 
-Buat folder `sawit/` dalam ZIP pengumpulan:
+Buat folder `sawit/` di dalam ZIP pengumpulan:
 
 ```
 sawit/
-  laporan_sawitvision.pdf         ← Langkah 1–4 dalam format laporan
-                                     (bisa Word/Google Docs dulu, export PDF)
-
-  screenshot_roboflow.png         ← Screenshot dataset TBS di Roboflow/Kaggle
-
-  tabel_eksperimen_tbs.png        ← Screenshot tabel Langkah 2 yang sudah diisi
-
-  screenshot_scan_tbs_1.png       ← Hasil scan foto TBS matang di aplikasi
-  screenshot_scan_tbs_2.png       ← Hasil scan foto TBS mentah di aplikasi
-
-  diagram_sawitvision.png         ← Gambar diagram sistem dari Langkah 3
-                                     (bisa tangan, draw.io, atau PowerPoint)
+  laporan_sawitvision.pdf       ← Langkah 1–4 dalam format laporan
+  screenshot_roboflow.png       ← Screenshot halaman dataset di Roboflow/Kaggle
+  tabel_eksperimen_tbs.png      ← Screenshot tabel Langkah 2 yang sudah diisi
+  screenshot_scan_tbs_1.png     ← Hasil scan foto TBS matang di aplikasi
+  screenshot_scan_tbs_2.png     ← Hasil scan foto TBS mentah di aplikasi
+  diagram_sawitvision.png       ← Gambar diagram sistem Langkah 3
 ```
 
-> ⚠️ Pastikan foto TBS yang Anda gunakan **tidak mengandung wajah pekerja**.
+> Gunakan `TEORI.md` di repo ini sebagai referensi untuk laporan.
 
 ---
 
-## 📚 Referensi untuk Laporan
+## 9. Troubleshooting
 
-Anda boleh mengutip sumber-sumber ini di laporan:
+### Error Saat Install
 
-| Sumber | Topik | Link |
-|--------|-------|------|
-| Roboflow Universe | Dataset TBS publik | https://universe.roboflow.com |
-| Ultralytics Docs | Cara kerja YOLO | https://docs.ultralytics.com |
-| Kaggle | Dataset sawit | https://kaggle.com/datasets |
-| TEORI.md (file ini) | Konsep CV, YOLO, Human-in-Loop | Baca file `TEORI.md` di repo ini |
+| Error | OS | Solusi |
+|-------|-----|--------|
+| `ModuleNotFoundError: cv2` | Semua | `pip install opencv-python` |
+| `ModuleNotFoundError: ultralytics` | Semua | `pip install ultralytics` |
+| `ModuleNotFoundError: PIL` | Semua | `pip install Pillow` |
+| `Microsoft Visual C++ required` | Windows | Install Build Tools dari https://visualstudio.microsoft.com/visual-cpp-build-tools/ |
+| `error: command 'gcc' failed` | macOS | `xcode-select --install` |
+| `py not recognized` | Windows | Centang **Add to PATH** saat install Python, lalu restart terminal |
 
-> 💡 File `TEORI.md` di repo ini berisi penjelasan lengkap tentang Computer Vision,
-> YOLO, Transfer Learning, dan Human-in-the-Loop — baca untuk memperdalam pemahaman.
+### Masalah Kamera
+
+| Masalah | OS | Solusi |
+|---------|-----|--------|
+| Kamera hitam / tidak terbuka | Windows | Settings → Privacy → Camera → aktifkan akses |
+| Kamera tidak terbuka | macOS | System Settings → Privacy → Camera → izinkan Terminal |
+| Kamera tidak ditemukan | Semua | `python app.py --camera 1` (coba index lain: 0, 1, 2) |
+| Gambar lag / FPS rendah | Semua | Normal di CPU tanpa GPU — tutup browser & aplikasi berat |
+
+### Masalah Saat Jalankan
+
+| Masalah | Solusi |
+|---------|--------|
+| Tombol keyboard tidak respons | Klik jendela GUI dulu (bukan terminal atau area tabel) |
+| Objek tidak terdeteksi | Tambah cahaya · jarak 30–60cm · `--conf 0.25` |
+| Download model gagal | Butuh internet ~50MB sekali, pastikan koneksi stabil |
+| Tidak punya webcam | `python app.py --image foto_produk.jpg` |
+| `(.venv)` tidak muncul | Jalankan ulang perintah aktivasi virtual environment |
+| Port kamera dipakai app lain | Tutup Zoom, Teams, Google Meet, lalu coba lagi |
 
 ---
 
-# 🔽 BAGIAN 4 — ALTERNATIF: CLONE DARI GITHUB
+## Struktur Repo
 
-> Gunakan ini jika mengalami kesulitan teknis dalam membangun dari nol,
-> atau jika ingin langsung mencoba aplikasi yang sudah lengkap.
-
----
-
-## Clone Proyek
-
-```bash
-git clone https://github.com/triandessinaga/ComputerVision.git
-cd ComputerVision
+```
+ComputerVision/
+├── app.py               ← Aplikasi utama (jalankan ini)
+├── requirements.txt     ← 4 library Python yang dibutuhkan
+├── README.md            ← Panduan lengkap ini
+├── TEORI.md             ← Teori Computer Vision + referensi akademik
+├── .gitignore
+│
+├── data/
+│   ├── catalog.json     ← 20 produk nyata (boleh edit)
+│   └── receipt_demo.png ← Demo gambar struk untuk OCR
+│
+├── output/              ← Hasil runtime (tidak di-push ke GitHub)
+│   ├── transactions.csv
+│   ├── inspections.csv
+│   └── receipts/
+│
+└── tests/
+    └── test_business.py ← 18 unit tests otomatis
 ```
 
-Jika belum punya Git, download installer dari **https://git-scm.com/download/win**
-dan install dengan pengaturan default.
-
-## Setup Setelah Clone
-
-```bash
-# Buat virtual environment
-py -3 -m venv .venv
-
-# Aktifkan
-.\.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Verifikasi
-python -m unittest discover -s tests -v
-
-# Jalankan!
-python app.py
-```
-
-## Perbedaan Clone vs Bangun Sendiri
-
-| Aspek | Bangun dari Nol | Clone |
-|-------|-----------------|-------|
-| Pemahaman kode | ✅ Lebih dalam | ⚡ Langsung jalan |
-| Waktu setup | ~30 menit | ~10 menit |
-| Cocok untuk | Belajar mandiri | Demo cepat |
-| Nilai praktikum | ✅ Penuh | ✅ Penuh (dengan bukti) |
-
-> 💡 Meskipun clone, Anda tetap harus melakukan semua eksperimen dan tugas sawit.
-> Bedanya hanya di tahap setup awal.
-
 ---
 
-## ⚠️ Disclaimer
+## Lisensi
 
-Model YOLO pretrained COCO mengenali **kategori generik**, bukan merek/SKU spesifik.
-Harga di `catalog.json` adalah **simulasi pendidikan**.
-Untuk kasir produksi: butuh model custom, barcode scanner, dan validasi sistem penuh.
-
----
-
-## 📝 Lisensi
-
-MIT License — bebas digunakan untuk pendidikan.  
+MIT License — bebas digunakan untuk keperluan pendidikan.
 Model YOLO: [Ultralytics AGPL-3.0](https://github.com/ultralytics/ultralytics)
 
 ---
