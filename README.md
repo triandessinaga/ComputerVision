@@ -9,50 +9,296 @@
 > **Mata Kuliah:** AI untuk Bisnis / Sistem Informasi  
 > **Dosen:** Triandes Sinaga  
 > **Durasi:** 150 menit praktikum + 120 menit tugas sawit  
-> **Level:** Pemula — tidak perlu GPU, tidak perlu pengalaman AI sebelumnya
+> **Level:** Pemula — tidak perlu GPU, tidak perlu pengalaman AI
 
 ---
 
-## 🎬 Apa yang Akan Anda Bangun?
+## 🎯 Apa yang Akan Dibangun?
 
 Aplikasi desktop **real-time** yang menggunakan kamera laptop untuk:
 - Mendeteksi produk dengan AI (YOLO)
-- Mencocokkan ke 20 produk nyata e-commerce Indonesia
+- Mencocokkan ke produk nyata e-commerce Indonesia
 - Mencatat ke keranjang belanja dengan konfirmasi operator
 - Menghasilkan **struk `.txt`** + **data CSV** siap analisis Excel
 
 ```
-Webcam → YOLO AI → Produk Terdeteksi → [SPACE] → Keranjang → [C] Checkout → Struk + CSV
+Webcam → YOLO AI → Produk Terdeteksi → [SPACE] → Keranjang → [C] Checkout → CSV + Struk
 ```
 
 ---
 
-## ⚡ MULAI CEPAT — 5 Menit
+# 🛠️ BAGIAN 1 — BANGUN DARI NOL
+
+> Ini adalah jalur utama. Ikuti step by step dari awal.  
+> Jika ada kendala teknis yang tidak bisa diselesaikan, lihat **Bagian 2 (Clone)** di bawah.
+
+---
+
+## LANGKAH 1 — Install Python
+
+### Cek apakah Python sudah ada
+
+Buka **Command Prompt** atau **PowerShell**, ketik:
+```bash
+py --version
+```
+
+Kalau muncul `Python 3.10.x` atau lebih baru → **lanjut ke Langkah 2**.
+
+Kalau muncul error atau versi lama → install dulu:
+
+1. Buka browser → pergi ke **https://python.org/downloads**
+2. Klik tombol kuning besar **"Download Python 3.12.x"**
+3. Jalankan installer yang diunduh
+4. ⚠️ **WAJIB centang** kotak **"Add Python to PATH"** di bagian bawah installer
+5. Klik **Install Now**
+6. Setelah selesai, tutup dan buka ulang PowerShell
+7. Verifikasi: `py --version` → harus muncul versi Python
+
+---
+
+## LANGKAH 2 — Siapkan Folder Proyek
+
+Buat folder kosong untuk proyek. Contoh:
+```
+D:\Praktikum\SmartRetail\
+```
+
+Caranya:
+1. Buka **File Explorer**
+2. Masuk ke Drive D (atau lokasi yang Anda inginkan)
+3. Klik kanan → **New Folder** → beri nama `SmartRetail`
+
+Lalu buka folder itu di **VS Code**:
+1. Buka VS Code
+2. `File` → `Open Folder` → pilih folder `SmartRetail`
+3. Buka terminal di VS Code: menu `Terminal` → `New Terminal`
+
+---
+
+## LANGKAH 3 — Buat Virtual Environment
+
+Virtual environment adalah "ruang terisolasi" untuk Python — agar library yang diinstall tidak bercampur dengan proyek lain.
 
 ```bash
-# 1. Clone repo
-git clone https://github.com/triandessinaga/ComputerVision.git
-cd ComputerVision
-
-# 2. Buat virtual environment
 py -3 -m venv .venv
+```
 
-# 3. Aktifkan (Windows PowerShell)
+Setelah berhasil, akan muncul folder `.venv` di proyek Anda.
+
+**Aktifkan virtual environment:**
+
+```bash
+# Windows PowerShell
 .\.venv\Scripts\Activate.ps1
+```
 
-# 4. Install dependencies
+Jika muncul error **"execution policy"**:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+Ketik `Y` lalu Enter, kemudian coba aktifkan lagi.
+
+```bash
+# Windows CMD (alternatif)
+.venv\Scripts\activate.bat
+```
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+```
+
+✅ Berhasil jika di terminal muncul `(.venv)` di awal baris.
+
+---
+
+## LANGKAH 4 — Buat File `requirements.txt`
+
+Di VS Code, buat file baru bernama `requirements.txt` di root folder proyek.
+Isi dengan:
+
+```
+ultralytics>=8.3,<9
+opencv-python>=4.8,<5
+Pillow>=10,<13
+pytesseract>=0.3.10,<1
+```
+
+Simpan file (`Ctrl+S`).
+
+---
+
+## LANGKAH 5 — Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# 5. Jalankan!
+Proses ini mengunduh dan menginstall:
+- `ultralytics` — YOLO object detection AI
+- `opencv-python` — baca webcam dan proses gambar
+- `Pillow` — render frame ke GUI Tkinter
+- `pytesseract` — OCR (opsional)
+
+Tunggu **3–7 menit** hingga selesai. Output normal:
+```
+Successfully installed ultralytics-X.X opencv-python-X.X Pillow-X.X ...
+```
+
+---
+
+## LANGKAH 6 — Buat File `data/catalog.json`
+
+Buat folder `data/` di dalam proyek, lalu buat file `catalog.json`:
+
+```json
+{
+  "_comment": "Mapping YOLO class ke produk nyata Indonesia",
+
+  "bottle":     {"sku":"MNM-001","product":"Aqua Botol Mineral 600ml",         "brand":"Aqua",      "price_idr":4500,   "category":"Minuman"},
+  "cup":        {"sku":"MNM-002","product":"Mie Sedaap Cup Ayam 75g",           "brand":"Wings Food","price_idr":5500,   "category":"Makanan Instan"},
+  "book":       {"sku":"ATK-001","product":"Buku Tulis Sinar Dunia 58 Lembar",  "brand":"Sinar Dunia","price_idr":7500,  "category":"Alat Tulis"},
+  "cell phone": {"sku":"ELK-001","product":"Samsung Galaxy A15",                "brand":"Samsung",   "price_idr":1899000,"category":"Smartphone"},
+  "laptop":     {"sku":"ELK-002","product":"ASUS VivoBook 14 Intel i3",         "brand":"ASUS",      "price_idr":5499000,"category":"Laptop"},
+  "keyboard":   {"sku":"ELK-003","product":"Keyboard Logitech K120 USB",        "brand":"Logitech",  "price_idr":175000, "category":"Aksesoris"},
+  "mouse":      {"sku":"ELK-004","product":"Mouse Wireless Logitech M170",      "brand":"Logitech",  "price_idr":149000, "category":"Aksesoris"},
+  "scissors":   {"sku":"ATK-002","product":"Gunting Joyko SC-809",              "brand":"Joyko",     "price_idr":18500,  "category":"Alat Tulis"},
+  "banana":     {"sku":"BSY-001","product":"Pisang Ambon Lokal (per 100g)",     "brand":"Lokal",     "price_idr":3000,   "category":"Buah & Sayur"},
+  "apple":      {"sku":"BSY-002","product":"Apel Fuji Import (per 100g)",       "brand":"Import",    "price_idr":4500,   "category":"Buah & Sayur"},
+  "orange":     {"sku":"BSY-003","product":"Jeruk Medan Manis (per 100g)",      "brand":"Lokal",     "price_idr":3500,   "category":"Buah & Sayur"},
+  "carrot":     {"sku":"BSY-004","product":"Wortel Segar (per 100g)",           "brand":"Lokal",     "price_idr":2000,   "category":"Buah & Sayur"},
+  "remote":     {"sku":"ELK-005","product":"Remote TV Universal RM-L1268",      "brand":"Universal", "price_idr":35000,  "category":"Elektronik"},
+  "clock":      {"sku":"ELK-006","product":"Jam Dinding Deli 12 Inch",          "brand":"Deli",      "price_idr":89000,  "category":"Elektronik"},
+  "bowl":       {"sku":"RMH-001","product":"Mangkok Melamin Lion Star 15cm",    "brand":"Lion Star", "price_idr":12000,  "category":"Dapur"},
+  "sandwich":   {"sku":"MKN-001","product":"Roti Tawar Sari Roti Jumbo 650g",   "brand":"Sari Roti", "price_idr":22500,  "category":"Makanan"},
+  "pizza":      {"sku":"MKN-002","product":"Frozen Pizza Belfoods Royal 135g",  "brand":"Belfoods",  "price_idr":35000,  "category":"Makanan Beku"},
+  "cake":       {"sku":"MKN-003","product":"Bolu Gulung Nabati Richeese",       "brand":"Nabati",    "price_idr":18000,  "category":"Snack"},
+  "vase":       {"sku":"RMH-002","product":"Vas Bunga Keramik Dekorasi",        "brand":"Ikea",      "price_idr":79000,  "category":"Dekorasi"},
+  "fork":       {"sku":"RMH-003","product":"Garpu Makan Stainless Steel 6 pcs", "brand":"Zebra",     "price_idr":32000,  "category":"Dapur"}
+}
+```
+
+---
+
+## LANGKAH 7 — Buat File `app.py`
+
+Buat file `app.py` di root folder. Ini adalah aplikasi utama.
+
+> 📌 **Salin kode dari repo GitHub:**
+> Buka https://github.com/triandessinaga/ComputerVision/blob/main/app.py
+> Klik tombol **Raw** → Select All → Copy → Paste ke file `app.py` Anda → Simpan
+
+Atau unduh langsung:
+```bash
+curl -o app.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/app.py
+```
+
+---
+
+## LANGKAH 8 — Buat File `tests/test_business.py`
+
+Buat folder `tests/` lalu buat file `test_business.py`:
+
+> 📌 Salin dari: https://github.com/triandessinaga/ComputerVision/blob/main/tests/test_business.py
+
+Atau unduh:
+```bash
+mkdir tests
+curl -o tests/test_business.py https://raw.githubusercontent.com/triandessinaga/ComputerVision/main/tests/test_business.py
+```
+
+---
+
+## LANGKAH 9 — Buat Folder Output
+
+```bash
+mkdir output
+```
+
+Atau buat manual lewat File Explorer — buat folder bernama `output` di dalam proyek.
+
+---
+
+## LANGKAH 10 — Verifikasi
+
+Jalankan unit tests untuk memastikan semua berjalan:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Harus muncul:
+```
+test_all_have_required_fields ... ok
+test_all_prices_positive ... ok
+...
+Ran 18 tests in 0.001s
+OK
+```
+
+---
+
+## LANGKAH 11 — Jalankan Aplikasi! 🚀
+
+```bash
 python app.py
 ```
 
-> Model YOLO (~50MB) diunduh **otomatis** saat pertama kali dijalankan. Butuh internet sekali.
+Saat pertama kali, YOLO mengunduh model AI (~50MB) secara otomatis.
+Tunggu hingga jendela GUI terbuka.
 
-**Tidak punya webcam?**
-```bash
-python app.py --image foto_produk.jpg
+**Struktur folder Anda sekarang:**
 ```
+SmartRetail/
+├── .venv/
+├── app.py
+├── requirements.txt
+├── data/
+│   └── catalog.json
+├── output/
+└── tests/
+    └── test_business.py
+```
+
+---
+
+# 📖 BAGIAN 2 — PANDUAN PRAKTIKUM
+
+## 🧠 Konsep Dasar (10 menit)
+
+### Cara Kerja Sistem
+
+```
+┌──────────┐    ┌─────────────────┐    ┌────────────────────────┐
+│  Webcam  │───▶│   YOLO Model    │───▶│    catalog.json        │
+│  Laptop  │    │  (AI Deteksi)   │    │  (Pemetaan Bisnis)     │
+└──────────┘    └─────────────────┘    └────────────────────────┘
+                       │                          │
+                 "bottle" 0.87          "Aqua 600ml — Rp 4.500"
+                       │
+                [SPACE] ← Anda konfirmasi dulu
+                       │
+             ┌─────────▼──────────┐
+             │     Keranjang      │──▶ [C] Checkout ──▶ CSV + Struk
+             └────────────────────┘
+```
+
+### Kosakata Penting
+
+| Istilah | Artinya |
+|---------|---------|
+| **Frame** | 1 foto dari video (30 foto/detik = 30 FPS) |
+| **Bounding Box** | Kotak yang mengelilingi objek terdeteksi |
+| **YOLO Class** | Kategori objek: `bottle`, `book`, `cell phone`, dll |
+| **Confidence** | Skor keyakinan AI: `0.87` = 87% yakin |
+| **Blacklist** | Kelas diabaikan: `person`, `car`, `chair`, dll |
+
+### ⚠️ Batasan Penting
+
+> Model mengenali **kategori generik**, bukan merek.
+> `cell phone` bisa Samsung, iPhone, atau Xiaomi — AI tidak tahu bedanya.
+> Itulah mengapa operator **wajib konfirmasi** (`SPACE`) sebelum data masuk.
 
 ---
 
@@ -63,67 +309,10 @@ python app.py --image foto_produk.jpg
 | `SPACE` | ✅ Tambah produk terdeteksi ke keranjang |
 | `TAB` | 🔄 Ganti pilihan deteksi (jika > 1 objek) |
 | `U` | ↩ Undo item terakhir |
-| `C` | 💳 Checkout + kalkulator kembalian otomatis |
-| `N` | 🔄 New — reset keranjang |
-| `S` | 💾 Simpan inspeksi ke CSV (tanpa checkout) |
+| `C` | 💳 Checkout + kalkulator kembalian |
+| `N` | 🔄 Reset keranjang |
+| `S` | 💾 Simpan inspeksi ke CSV |
 | `Q` / `Esc` | 🚪 Keluar |
-
----
-
-## 📁 Struktur Proyek
-
-```
-ComputerVision/
-│
-├── app.py               ← 🎯 File utama, jalankan ini
-├── requirements.txt     ← 4 library: ultralytics, opencv, pillow, pytesseract
-├── README.md            ← Panduan lengkap ini
-│
-├── data/
-│   ├── catalog.json     ← 📦 20 produk real (edit harga di sini)
-│   └── receipt_demo.png ← Demo OCR struk
-│
-├── output/              ← 📊 Hasil otomatis saat program jalan
-│   ├── transactions.csv ← Log transaksi [C]
-│   ├── inspections.csv  ← Log inspeksi [S]
-│   └── receipts/        ← Struk .txt per transaksi
-│
-└── tests/
-    └── test_business.py ← 18 unit tests
-```
-
----
-
-## 📦 Katalog — 20 Produk Real Indonesia
-
-Setiap kelas YOLO dipetakan ke produk nyata yang dijual di Tokopedia/Shopee/Alfamart:
-
-| YOLO Class | Produk | Brand | Harga |
-|------------|--------|-------|-------|
-| `cell phone` | Samsung Galaxy A15 | Samsung | Rp 1.899.000 |
-| `laptop` | ASUS VivoBook 14 Intel i3 | ASUS | Rp 5.499.000 |
-| `keyboard` | Keyboard Logitech K120 USB | Logitech | Rp 175.000 |
-| `mouse` | Mouse Wireless Logitech M170 | Logitech | Rp 149.000 |
-| `bottle` | Aqua Botol Mineral 600ml | Aqua | Rp 4.500 |
-| `cup` | Mie Sedaap Cup Ayam Spesial 75g | Wings Food | Rp 5.500 |
-| `book` | Buku Tulis Sinar Dunia 58 Lembar | Sinar Dunia | Rp 7.500 |
-| `scissors` | Gunting Joyko SC-809 All Purpose | Joyko | Rp 18.500 |
-| `banana` | Pisang Ambon Lokal (per 100g) | Lokal | Rp 3.000 |
-| `apple` | Apel Fuji Import (per 100g) | Import | Rp 4.500 |
-| `orange` | Jeruk Medan Manis (per 100g) | Lokal | Rp 3.500 |
-| `carrot` | Wortel Segar Kupas (per 100g) | Lokal | Rp 2.000 |
-| `sandwich` | Roti Tawar Sari Roti Jumbo 650g | Sari Roti | Rp 22.500 |
-| `remote` | Remote TV Universal RM-L1268 | Universal | Rp 35.000 |
-| `clock` | Jam Dinding Deli 12 Inch | Deli | Rp 89.000 |
-| `bowl` | Mangkok Melamin Polos 15cm | Lion Star | Rp 12.000 |
-| `fork` | Garpu Makan Stainless Steel (6 pcs) | Zebra | Rp 32.000 |
-| `pizza` | Frozen Pizza Belfoods Royal 135g | Belfoods | Rp 35.000 |
-| `cake` | Bolu Gulung Nabati Richeese | Nabati | Rp 18.000 |
-| `vase` | Vas Bunga Keramik Dekorasi | Ikea | Rp 79.000 |
-
-> **Kelas yang diabaikan (blacklist):** `person`, `car`, `chair`, `cat`, `dog`, dan 49 kelas lain — tidak akan masuk keranjang meskipun terdeteksi.
-
-> **Edit harga:** Buka `data/catalog.json`, ubah nilai `price_idr`, simpan, jalankan ulang.
 
 ---
 
@@ -131,98 +320,14 @@ Setiap kelas YOLO dipetakan ke produk nyata yang dijual di Tokopedia/Shopee/Alfa
 
 ```bash
 python app.py                    # webcam default
-python app.py --camera 1         # webcam ke-2 / eksternal
+python app.py --camera 1         # webcam ke-2
 python app.py --image foto.jpg   # gambar statis (tanpa webcam)
-python app.py --conf 0.30        # turunkan threshold agar lebih sensitif
+python app.py --conf 0.30        # lebih sensitif mendeteksi
 ```
 
 ---
 
-## 🧪 Unit Tests
-
-```bash
-python -m unittest discover -s tests -v
-# Ran 18 tests in 0.001s — OK
-```
-
----
-
-## 📊 Output yang Dihasilkan
-
-### `output/transactions.csv` — dibuat saat `[C]` Checkout
-```
-invoice,timestamp,kasir,sku,product,qty,unit_price,line_total,payment,change
-INV-20261027-103500,2026-10-27T10:35:00,OPERATOR-01,MNM-001,
-Aqua Botol Mineral 600ml,2,4500,9000,50000,41000
-```
-*2 botol × Rp 4.500 = Rp 9.000 | Bayar Rp 50.000 | Kembalian Rp 41.000*
-
-### `output/inspections.csv` — dibuat saat `[S]`
-```
-timestamp,sample_id,source,yolo_class,sku,product,category,price_idr,confidence,operator_confirmed
-2026-10-27T10:30:00,ITEM-001,WEBCAM,bottle,MNM-001,Aqua Botol Mineral 600ml,Minuman,4500,0.876,YES
-```
-
----
-
-# 📖 PANDUAN PRAKTIKUM — Step by Step
-
-## 🧠 Konsep Wajib Dipahami (10 menit)
-
-### Pipeline Sistem
-
-```
-┌──────────┐    ┌─────────────────┐    ┌───────────────────────┐
-│  Webcam  │───▶│   YOLO Model    │───▶│    catalog.json       │
-│  Laptop  │    │  (AI Deteksi)   │    │  (Pemetaan Bisnis)    │
-└──────────┘    └─────────────────┘    └───────────────────────┘
-                       │                         │
-                 "bottle" 0.87         "Aqua 600ml — Rp 4.500"
-                       │                    Brand: Aqua
-                       │
-                [SPACE] ← Anda konfirmasi dulu
-                       │
-             ┌─────────▼──────────┐
-             │     Keranjang      │──▶ [C] Checkout ──▶ CSV + Struk
-             └────────────────────┘
-```
-
-### Kosakata Teknis
-
-| Istilah | Artinya |
-|---------|---------|
-| **Frame** | 1 foto dari video (30 foto/detik = 30 FPS) |
-| **Bounding Box** | Kotak yang mengelilingi objek yang dideteksi |
-| **YOLO Class** | Kategori objek: `bottle`, `book`, `cell phone`, dll |
-| **Confidence** | Skor keyakinan AI: `0.87` = 87% yakin |
-| **COCO** | Dataset 80 kategori benda untuk melatih model YOLO ini |
-| **Blacklist** | Kelas yang diabaikan sistem: `person`, `car`, `chair`, dll |
-
-### ⚠️ Batasan Penting
-
-> Model mengenali **kategori generik**, bukan merek spesifik.
-> `cell phone` bisa Samsung, iPhone, atau Xiaomi — AI tidak tahu bedanya.
->
-> Itulah mengapa operator **wajib konfirmasi** (tekan `SPACE`) sebelum data masuk.
-> Ini adalah **prototipe pendidikan**, bukan sistem kasir produksi.
-
----
-
-## ⚙️ TAHAP A — Setup (0–20 Menit)
-
-Ikuti langkah di bagian **Mulai Cepat** di atas.
-
-Setelah berhasil, verifikasi:
-```bash
-python -m unittest discover -s tests -v
-# Harus: Ran 18 tests ... OK
-```
-
-**📸 Checkpoint A:** Screenshot terminal menampilkan `OK` dan jendela GUI terbuka.
-
----
-
-## 📷 TAHAP B — Kenali Aplikasi (20–40 Menit)
+## TAHAP A — Kenali Aplikasi (0–20 menit)
 
 ### Layout GUI
 
@@ -231,9 +336,9 @@ python -m unittest discover -s tests -v
 │  🔍 Smart Retail Inspector         👤 OPERATOR-01   🕐 Waktu   │
 ├──────────────────────────┬─────────────────────────────────────┤
 │  📷 AI Kamera  │📋 Katalog│       🛒 Keranjang Belanja          │
-│  ┌────────────┐  🎥Kontrol│  Produk     Qty    Harga  Subtotal │
-│  │            │  ▶Aktifkan│  ──────────────────────────────── │
-│  │  KAMERA    │  ■ Stop   │                                    │
+│  ┌────────────┐  🎥Kontrol│                                    │
+│  │            │  ▶Aktifkan│  Produk   Qty   Harga   Subtotal  │
+│  │  KAMERA    │  ■ Stop   │  ─────────────────────────────── │
 │  │  LIVE 16:9 │           │                                    │
 │  │            │  🎯Deteksi│  Total:              Rp 0          │
 │  └────────────┘  ⌨Shortcut│  [💳 CHECKOUT  [C]]               │
@@ -241,20 +346,20 @@ python -m unittest discover -s tests -v
 └──────────────────────────┴─────────────────────────────────────┘
 ```
 
-### Coba Langkah Pertama
+### Coba Pertama
 
 1. Klik tab **📷 AI Kamera**
-2. Di panel kanan kamera, klik **▶ Aktifkan Kamera**
-3. Arahkan **botol air** ke webcam — jarak 30–60 cm, cahaya cukup
-4. Lihat panel **🎯 Deteksi Sekarang** — nama produk + confidence muncul
-5. Tekan **`SPACE`** → produk masuk keranjang kanan
-6. Tekan **`C`** → lihat dialog checkout dengan kembalian otomatis
+2. Klik **▶ Aktifkan Kamera** di panel kanan
+3. Arahkan botol air ke webcam (jarak 30–60 cm, cahaya cukup)
+4. Panel **🎯 Deteksi Sekarang** menampilkan nama produk + confidence
+5. Tekan `SPACE` → produk masuk keranjang
+6. Tekan `C` → lihat dialog checkout dengan kembalian
 
-**📸 Checkpoint B:** Screenshot GUI dengan bounding box aktif dan 1 produk di keranjang.
+**📸 Checkpoint A:** Screenshot GUI dengan bounding box aktif dan 1 produk di keranjang.
 
 ---
 
-## 🧪 TAHAP C — Eksperimen (40–90 Menit)
+## TAHAP B — Eksperimen (20–70 menit)
 
 ### Tabel Eksperimen (isi minimal 6 baris)
 
@@ -263,7 +368,7 @@ python -m unittest discover -s tests -v
 | 1 | Botol air | `bottle` | Aqua Mineral 600ml | 0.__ | Cahaya normal | |
 | 2 | Buku | `book` | Buku Tulis Sinar Dunia | 0.__ | Cahaya normal | |
 | 3 | Ponsel | `cell phone` | Samsung Galaxy A15 | 0.__ | Cahaya normal | |
-| 4 | Botol air | `bottle` | | | Cahaya redup/malam | |
+| 4 | Botol air | `bottle` | | | Cahaya redup | |
 | 5 | Buku | `book` | | | Tertutup sebagian | |
 | 6 | Bebas | | | | Kondisi pilihan Anda | |
 
@@ -273,138 +378,95 @@ python -m unittest discover -s tests -v
 Success Rate = (jumlah ✓) ÷ (total percobaan) × 100%
 ```
 
-### Pertanyaan Analisis
+**Pertanyaan:**
+1. Kondisi apa yang membuat confidence paling tinggi?
+2. Kondisi apa yang paling sering gagal?
+3. Jika confidence = 0.42, percayakah Anda untuk transaksi uang nyata?
 
-1. Kondisi apa yang membuat confidence **paling tinggi**?
-2. Kondisi apa yang paling sering **gagal**?
-3. Jika confidence = 0.42, apakah Anda percaya hasilnya untuk transaksi uang nyata?
-
-**📸 Checkpoint C:** Tabel terisi lengkap + angka success rate.
+**📸 Checkpoint B:** Tabel terisi + angka success rate.
 
 ---
 
-## 💳 TAHAP D — Transaksi Lengkap (90–110 Menit)
+## TAHAP C — Transaksi Lengkap (70–90 menit)
 
-### Lakukan Ini Step by Step
+1. Scan **2× botol** → `SPACE` dua kali
+2. Tab **📋 Katalog** → double-click `book` → tambah 1
+3. Tekan `C` → masukkan bayar: `50000`
+4. Lihat kembalian + rincian pecahan uang otomatis
+5. Klik **✓ Proses Pembayaran**
 
-1. Scan **2× botol air** → tekan `SPACE` dua kali
-2. Pindah tab **📋 Katalog** → double-click produk `book` → tambah 1
-3. Tekan **`C`** (Checkout)
-4. Masukkan bayar: `50000`
-5. Lihat kembalian + rincian **pecahan uang** otomatis
-6. Klik **✓ Proses Pembayaran**
-
-### Cek Output
-
-Buka folder `output/` di VS Code atau File Explorer:
+### Cek Output di Folder `output/`
 
 ```
-output/transactions.csv      ← Buka dengan Excel
-output/inspections.csv       ← Log inspeksi dari [S]
+output/transactions.csv      ← Buka di Excel
+output/inspections.csv       ← Log dari [S]
 output/receipts/INV-*.txt    ← Struk teks
 ```
 
-**Contoh baris `transactions.csv` yang akan Anda lihat:**
+**Contoh baris `transactions.csv`:**
 ```
-INV-20261027-103500, 2026-10-27T10:35:00, OPERATOR-01,
-MNM-001, Aqua Botol Mineral 600ml, 2, 4500, 9000, 50000, 41000
+INV-20261027-103500, OPERATOR-01, MNM-001,
+Aqua Botol Mineral 600ml, 2, 4500, 9000, 50000, 41000
 ```
-Bisa baca? → 2 × Rp 4.500 = Rp 9.000 | Bayar Rp 50.000 | Kembalian Rp 41.000
+*2 × Rp 4.500 = Rp 9.000 | Bayar Rp 50.000 | Kembalian Rp 41.000*
 
-### Edit Harga — Coba Sendiri
+### Edit Harga Produk
 
-Buka `data/catalog.json`, ubah harga `bottle` dari `4500` → `6000`:
-```json
-"bottle": {
-    "sku": "MNM-001",
-    "product": "Aqua Botol Mineral 600ml",
-    "price_idr": 6000
-}
-```
-Simpan → `python app.py` → scan botol → harga di keranjang jadi Rp 6.000.  
-**Itulah cara business mapping bekerja.**
+Buka `data/catalog.json`, ubah `price_idr` pada `bottle` dari `4500` → `6000`.
+Simpan → jalankan ulang → scan botol → harga jadi Rp 6.000. ✅
 
-**📸 Checkpoint D:** Screenshot dialog checkout + CSV terbuka di Excel.
+**📸 Checkpoint C:** Screenshot checkout + CSV di Excel.
 
 ---
 
-## 🔒 TAHAP E — Privacy Detective (110–120 Menit)
-
-Tentukan **Aman / Perlu Izin / Dilarang** untuk setiap skenario:
+## TAHAP D — Privacy Detective (90–100 menit)
 
 | # | Skenario | Status | Alasan |
 |---|----------|--------|--------|
 | 1 | Scan botol Aqua, tidak ada orang di frame | | |
-| 2 | Webcam menangkap wajah pelanggan di belakang produk | | |
-| 3 | Scan struk belanja yang ada nomor telepon | | |
-| 4 | Foto rak produk di toko tanpa ada orang | | |
-| 5 | Rekam video kerja kasir seharian tanpa izin mereka | | |
-
-**Cek langsung:** Buka `output/*.jpg` — adakah foto wajah Anda tersimpan saat tekan `S`?
+| 2 | Webcam menangkap wajah pelanggan | | |
+| 3 | Scan struk yang ada nomor telepon | | |
+| 4 | Foto rak produk tanpa orang | | |
+| 5 | Rekam video kasir seharian tanpa izin | | |
 
 ---
 
-## 🏗️ TAHAP F — Business Studio (120–140 Menit)
+## TAHAP E — Business Studio (100–120 menit)
 
-### Buat Diagram Alur Sistem
+### Buat Diagram Alur
 
 ```
-Kamera Laptop
-      │
-      ▼
-[YOLO Detection]
-      │
-      ├──▶ person / chair / car ──▶ DIABAIKAN (blacklist)
-      │
-      └──▶ bottle / book / phone ──▶ Cocok di catalog.json
-                                            │
-                                            ▼
-                                   Panel "Deteksi Sekarang"
-                                   (nama produk + harga + brand)
-                                            │
-                                   Operator tekan [SPACE]
-                                            │
-                                            ▼
-                                     Keranjang Belanja
-                                            │
-                                   Operator tekan [C]
-                                            │
-                               ┌────────────┴────────────┐
-                               ▼                          ▼
-                       transactions.csv            Struk .txt
-                               │
-                               ▼
-                       Excel / Dashboard
-                       Laporan Manajer
+Kamera → [YOLO] → person/chair → DIABAIKAN
+                → bottle/book  → Catalog Match
+                                      │
+                               Operator [SPACE]
+                                      │
+                               Keranjang [C]
+                                      │
+                         ┌────────────┴──────────┐
+                         ▼                        ▼
+                 transactions.csv           Struk .txt
+                         │
+                         ▼
+                  Excel / Dashboard
 ```
 
-### Isi Tabel Analisis Sistem
-
-| Pertanyaan | Jawaban Anda |
-|------------|-------------|
-| Siapa saja aktor dalam sistem? | |
+| Pertanyaan | Jawaban |
+|------------|---------|
+| Aktor dalam sistem | |
 | 3 data wajib per transaksi | |
-| 2 validasi sebelum data disimpan | |
-| 1 KPI yang bisa diukur dari CSV | |
-| 2 risiko utama sistem ini | |
+| 2 validasi sebelum simpan | |
+| 1 KPI dari CSV | |
+| 2 risiko utama | |
 
 ---
 
-## 💬 TAHAP G — Refleksi (140–150 Menit)
+## TAHAP F — Refleksi (120–130 menit)
 
-Jawab **4 pertanyaan** berikut (minimal 2–3 kalimat per jawaban):
-
-**1. Kapan model gagal?**
-Deskripsikan 1 kondisi dari eksperimen Anda di mana AI salah atau tidak mendeteksi.
-
-**2. Konsekuensi bisnis jika salah?**
-Jika `laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500) dan langsung diproses — apa kerugiannya?
-
-**3. Mengapa operator tetap harus konfirmasi?**
-Sistem meminta `SPACE` sebelum menambah item. Lebih baik dibuat otomatis? Argumen pro dan kontra.
-
-**4. Apa yang perlu ditambah untuk produksi nyata?**
-Sebutkan **3 hal konkret** yang harus ada sebelum dipakai di kasir toko sesungguhnya.
+1. **Kapan model gagal?** — 1 kondisi nyata dari eksperimen Anda
+2. **Konsekuensi bisnis?** — `laptop` (Rp 5.499.000) terdeteksi sebagai `book` (Rp 7.500)?
+3. **Mengapa operator konfirmasi?** — Pro dan kontra jika dibuat otomatis
+4. **Siap produksi?** — 3 hal yang harus ditambah
 
 ---
 
@@ -415,12 +477,12 @@ Sebutkan **3 hal konkret** yang harus ada sebelum dipakai di kasir toko sesunggu
 | 🟢 **Starter** | GUI aktif + bounding box terlihat | 10 |
 | 🔵 **Explorer** | Deteksi 3 jenis produk berbeda | 15 |
 | 🟡 **Analyst** | Tabel 6 eksperimen + success rate | 20 |
-| 🟠 **Developer** | Edit catalog.json + transaksi + CSV valid | 25 |
+| 🟠 **Developer** | Edit catalog + transaksi + CSV valid | 25 |
 | 🔴 **Business Boss** | Diagram sistem + KPI + 2 risiko | 20 |
 | ⭐ **Privacy Guardian** | Privacy Detective semua dijawab | 10 |
 | 🏆 **BONUS** | Tambah 1 produk baru ke catalog.json | +10 |
 
-**Total: 100 XP = nilai penuh** *(+10 XP bonus)*
+**Total: 100 XP = nilai penuh**
 
 ---
 
@@ -429,203 +491,14 @@ Sebutkan **3 hal konkret** yang harus ada sebelum dipakai di kasir toko sesunggu
 Buat ZIP: **`NamaNIM_SmartRetail.zip`**
 
 ```
-✅ screenshot_A_gui.png              GUI aktif + terminal OK
-✅ screenshot_B_bbox.png             Bounding box + produk di keranjang
-✅ screenshot_D_checkout.png         Dialog checkout + kembalian
-✅ screenshot_D_csv_excel.png        transactions.csv di Excel
+✅ screenshot_A_gui.png              GUI aktif + bounding box
+✅ screenshot_C_checkout.png         Dialog checkout + kembalian
+✅ screenshot_C_csv_excel.png        CSV di Excel
 ✅ tabel_eksperimen.pdf              6+ baris + success rate
-✅ diagram_sistem.png                Diagram alur dari Tahap F
-✅ refleksi.pdf                      4 jawaban Tahap G
+✅ diagram_sistem.png                Dari Tahap E
+✅ refleksi.pdf                      4 jawaban Tahap F
 ✅ privacy_detective.pdf             Tabel 5 skenario
 ✅ sawit/ (folder)                   Tugas SawitVision (lihat bagian bawah)
-```
-
-> ⚠️ Pastikan tidak ada wajah atau data pribadi di file yang dikumpulkan!
-
----
-
-# 🌴 TUGAS SAWIT — Transfer ke Industri
-
-> **Durasi:** 120 menit (di luar jam kelas)  
-> **Bobot:** 30% dari total nilai praktikum
-
----
-
-## 🎯 Konteks Bisnis
-
-Anda sudah membangun Smart Retail Inspector yang mendeteksi produk di kasir.
-
-Sekarang **transfer konsep yang sama** ke industri kelapa sawit:
-
-> Perusahaan sawit di Sumatera ingin menggunakan AI untuk menggantikan
-> inspeksi manual kualitas **Tandan Buah Segar (TBS)** di loading ramp.
-> Grading saat ini dilakukan petugas — lambat, subjektif, tidak konsisten antar shift.
-
----
-
-## 📐 Skema Sistem SawitVision
-
-```
-                ┌──────────────────────────────────────────┐
-                │          SAWITVISION SYSTEM               │
-                │                                           │
-TBS di       ┌──┴──┐   ┌────────────┐   ┌───────────────┐  │
-Loading ────▶│Kamera│──▶│ YOLO Model │──▶│ Business Rules│  │
-Ramp         │ IP  │   │ (Custom!)  │   │    Engine     │  │
-             └──┬──┘   └────────────┘   └───────┬───────┘  │
-                │                               │           │
-                │               ┌───────────────┘           │
-                │               ▼                           │
-                │     ┌──────────────────┐                  │
-                │     │ Petugas Validasi  │                  │
-                │     │  (Human-in-Loop) │                  │
-                │     └────────┬─────────┘                  │
-                │              │ Konfirmasi                  │
-                │              ▼                            │
-                │     ┌──────────────────┐                  │
-                │     │    Database       │──▶ Dashboard QC  │
-                │     │  (Inspeksi Log)  │    Manajer        │
-                │     └──────────────────┘                  │
-                └──────────────────────────────────────────┘
-```
-
----
-
-## 📋 Bagian 1 — Analisis Gap (20 menit)
-
-Bandingkan sistem retail dengan kebutuhan sawit:
-
-| Aspek | Smart Retail Inspector | SawitVision (isi jawaban Anda) |
-|-------|----------------------|-------------------------------|
-| Objek yang dideteksi | Botol, buku, ponsel (COCO) | TBS — model COCO tidak mengenali ini |
-| Model YOLO | Pretrained generik | ❓ Pretrained atau custom? |
-| Cara konfirmasi | Tekan `SPACE` | ❓ |
-| Output data | CSV transaksi + struk | ❓ |
-| Lingkungan | Indoor, meja kasir | ❓ Outdoor, loading ramp |
-| Skala operasi | Puluhan item/hari | ❓ Ratusan ton/hari |
-| Keahlian operator | Kasir umum | ❓ |
-
----
-
-## 🧪 Bagian 2 — Eksperimen Langsung (30 menit)
-
-**Langkah 1:** Cari 3 foto TBS dari internet (sumber legal, tanpa wajah pekerja):
-- 1 foto TBS **matang** (warna jingga/merah)
-- 1 foto TBS **mentah** (warna hijau/hitam)
-- 1 foto TBS **sulit dinilai** (campuran)
-
-**Langkah 2:** Scan foto di aplikasi:
-```bash
-python app.py --image foto_tbs_matang.jpg
-```
-
-**Langkah 3:** Catat hasilnya:
-
-| Foto | Objek Nyata | Terdeteksi sebagai | Conf | Relevan? |
-|------|-------------|-------------------|------|----------|
-| TBS Matang | Tandan buah sawit | ??? | 0.__ | Ya / Tidak |
-| TBS Mentah | Tandan buah sawit | ??? | 0.__ | Ya / Tidak |
-| TBS Sulit | Tandan buah sawit | ??? | 0.__ | Ya / Tidak |
-
-**❓ Pertanyaan Kritis:**
-> Model TIDAK mengenali TBS. Apakah ini berarti AI-nya gagal?
-> Atau justru ini pelajaran penting tentang keterbatasan model generik?
-> Jelaskan dalam 3–5 kalimat — dan apa implikasinya untuk bisnis sawit.
-
----
-
-## 📝 Bagian 3 — Proposal Sistem (50 menit)
-
-Buat proposal **1–2 halaman** dengan struktur ini:
-
-### 3.1 Problem Statement
-- Apa yang terjadi jika grading TBS salah satu grade?
-- Berapa estimasi kerugian per ton jika salah grade?
-- Mengapa solusi manual tidak cukup untuk skala industri?
-
-### 3.2 Proposed Solution
-Gambar ulang skema SawitVision di atas dengan detail spesifik:
-- Spesifikasi kamera: IP camera? Resolusi berapa? Posisi pemasangan?
-- Jenis model: pretrained COCO (seperti sekarang) atau perlu custom training?
-- Bagaimana petugas melakukan konfirmasi?
-- Di mana data disimpan — local database atau cloud?
-
-### 3.3 Data Requirements
-```
-Untuk pilot minimal yang credible:
-  □ _____ foto TBS per kelas kematangan (matang/mentah/over-ripe)
-  □ Label/anotasi bounding box oleh: ____________________
-  □ Variasi kondisi yang harus dicakup:
-      □ Pagi / siang / sore
-      □ Cerah / mendung / hujan
-      □ TBS besar / kecil
-  □ Metadata wajib per foto: _____________________________
-```
-
-### 3.4 Pilot KPI (3 metrik terukur)
-
-| KPI | Cara Mengukur | Catatan |
-|-----|---------------|---------|
-| Akurasi deteksi per kelas | | Target ditetapkan setelah baseline manual diukur |
-| Waktu inspeksi per truk | | Bandingkan dengan waktu manual |
-| Tingkat override petugas | | Berapa % keputusan AI dikoreksi petugas |
-
-> ⚠️ Jangan mengarang angka target. Tuliskan: *"Target ditetapkan setelah mengukur baseline manual selama 2 minggu."*
-
-### 3.5 Risiko & Mitigasi
-
-| Risiko | Dampak Bisnis | Mitigasi |
-|--------|--------------|---------|
-| Model salah grade TBS matang → dihitung mentah | Rugi per ton | |
-| Kamera kotor / rusak di loading ramp | Sistem mati | |
-| Petugas tidak percaya sistem AI | Resistensi adopsi | |
-| Foto berisi identitas pekerja | Pelanggaran privasi | |
-
-### 3.6 Roadmap 8 Minggu
-
-```
-Minggu 1–2:  Pengumpulan foto TBS berlabel (min. 200/kelas, 3 kelas)
-Minggu 3–4:  Fine-tuning YOLO dengan dataset TBS
-Minggu 5:    Testing offline di laboratorium
-Minggu 6–7:  Pilot di 1 loading ramp dengan pengawasan ketat
-Minggu 8:    Evaluasi data → keputusan scale-up atau revisi
-```
-
-**Pertanyaan:** Apa risikonya jika langsung ke Minggu 6 tanpa Minggu 1–5?
-
----
-
-## 🔒 Bagian 4 — Refleksi Etika (20 menit)
-
-**4.1 Hak Pekerja**
-Kamera di loading ramp merekam aktivitas pekerja setiap hari.
-Apa yang harus dilakukan perusahaan *sebelum* memasang kamera?
-(Petunjuk: pikirkan tentang persetujuan, informasi, dan tujuan penggunaan)
-
-**4.2 Akuntabilitas Keputusan**
-Jika AI salah grade dan perusahaan rugi 50 juta rupiah dalam sebulan —
-siapa yang bertanggung jawab: pengembang AI, operator yang konfirmasi,
-atau manajer yang memutuskan pakai sistem?
-
-**4.3 Kepercayaan & Perubahan**
-Petugas senior 10 tahun grading TBS merasa tidak dipercaya karena digantikan AI.
-Bagaimana Anda sebagai analyst sistem mengelola resistensi ini?
-
----
-
-## 📦 Output Tugas Sawit
-
-Buat folder `sawit/` di dalam ZIP pengumpulan:
-
-```
-sawit/
-  proposal_sawitvision.pdf         Bagian 1–3 format laporan
-  tabel_eksperimen_tbs.pdf         Tabel Bagian 2 + analisis kritis
-  refleksi_etika.pdf               Jawaban Bagian 4
-  foto_tbs_1.jpg                   Foto yang digunakan (tanpa wajah)
-  foto_tbs_2.jpg
-  foto_tbs_3.jpg
-  screenshot_scan_tbs.png          Hasil scan foto TBS di aplikasi
 ```
 
 ---
@@ -637,21 +510,212 @@ sawit/
 | `ModuleNotFoundError: cv2` | `pip install opencv-python` |
 | `ModuleNotFoundError: ultralytics` | `pip install ultralytics` |
 | `ModuleNotFoundError: PIL` | `pip install Pillow` |
-| Kamera hitam / tidak terbuka | Tutup Zoom/Teams · Settings → Privacy → Camera |
+| Kamera hitam / tidak buka | Tutup Zoom/Teams · Settings → Privacy → Camera |
 | Kamera tidak ditemukan | `python app.py --camera 1` |
-| Tombol keyboard tidak respons | Klik area jendela GUI dulu, bukan terminal |
+| Tombol keyboard tidak respons | Klik jendela GUI dulu, bukan terminal |
 | Objek tidak terdeteksi | Tambah cahaya · jarak 30–60 cm · `--conf 0.25` |
-| FPS lambat | Normal di CPU — tutup browser & app berat lain |
-| Download model gagal | Butuh internet ~50MB sekali saat pertama |
+| FPS lambat | Normal di CPU · tutup app berat lain |
+| Download model gagal | Butuh internet ~50MB sekali saja |
 | Tidak punya webcam | `python app.py --image foto_produk.jpg` |
+
+---
+
+# 🌴 BAGIAN 3 — TUGAS SAWIT
+
+> **Durasi:** 120 menit di luar jam kelas  
+> **Bobot:** 30% dari total nilai
+
+---
+
+## Konteks Bisnis
+
+> Perusahaan sawit di Sumatera ingin menggunakan AI untuk menggantikan
+> inspeksi manual kualitas **Tandan Buah Segar (TBS)** di loading ramp.
+> Grading saat ini dilakukan petugas — lambat, subjektif, tidak konsisten antar shift.
+
+---
+
+## Skema Sistem SawitVision
+
+```
+TBS di       ┌─────────┐   ┌────────────────┐   ┌─────────────────┐
+Loading ────▶│ Kamera  │──▶│  YOLO Custom   │──▶│ Petugas Validasi│
+Ramp         │ IP / HD │   │ (TBS Dataset!) │   │  Human-in-Loop  │
+             └─────────┘   └────────────────┘   └────────┬────────┘
+                                                          │
+                                                          ▼
+                                                  ┌───────────────┐
+                                                  │   Database    │──▶ Dashboard QC
+                                                  └───────────────┘
+```
+
+---
+
+## Bagian 1 — Analisis Gap (20 menit)
+
+| Aspek | Smart Retail Inspector | SawitVision (jawaban Anda) |
+|-------|----------------------|---------------------------|
+| Objek | Botol, buku, ponsel | TBS — COCO tidak mengenali |
+| Model YOLO | Pretrained generik | ❓ |
+| Konfirmasi | Tekan `SPACE` | ❓ |
+| Output | CSV + struk | ❓ |
+| Lingkungan | Indoor, meja | ❓ Outdoor, loading ramp |
+| Skala | Puluhan item/hari | ❓ Ratusan ton/hari |
+
+---
+
+## Bagian 2 — Eksperimen (30 menit)
+
+Cari **3 foto TBS** dari sumber legal (tanpa wajah pekerja):
+
+```bash
+python app.py --image foto_tbs_matang.jpg
+```
+
+| Foto | Objek Nyata | Terdeteksi | Conf | Relevan? |
+|------|-------------|-----------|------|----------|
+| TBS Matang | Tandan buah | ??? | 0.__ | Ya/Tidak |
+| TBS Mentah | Tandan buah | ??? | 0.__ | Ya/Tidak |
+| TBS Sulit | Tandan buah | ??? | 0.__ | Ya/Tidak |
+
+> **❓ Pertanyaan Kritis:** Model tidak mengenali TBS — apakah ini kegagalan AI
+> atau justru pelajaran penting tentang batas model generik?
+> Jelaskan implikasinya untuk bisnis sawit dalam 3–5 kalimat.
+
+---
+
+## Bagian 3 — Proposal Sistem (50 menit)
+
+Buat proposal **1–2 halaman** berisi:
+
+**3.1 Problem Statement**
+- Apa kerugian bisnis jika grading TBS salah?
+
+**3.2 Proposed Solution**
+- Spesifikasi kamera di loading ramp
+- Pretrained COCO atau model custom TBS?
+- Cara operator konfirmasi
+
+**3.3 Data Requirements**
+```
+□ _____ foto TBS per kelas (matang/mentah/over-ripe)
+□ Label bounding box oleh: ____________________
+□ Variasi: pagi/siang/sore, cerah/hujan, besar/kecil
+□ Metadata per foto: __________________________
+```
+
+**3.4 Pilot KPI**
+
+| KPI | Cara Mengukur |
+|-----|---------------|
+| Akurasi deteksi | Dibandingkan keputusan petugas ahli |
+| Waktu per inspeksi | Dibandingkan waktu manual baseline |
+| Tingkat override petugas | % keputusan AI yang dikoreksi |
+
+> ⚠️ Jangan mengarang angka target. Tulis: *"Target ditetapkan setelah baseline manual diukur 2 minggu."*
+
+**3.5 Risiko & Mitigasi**
+
+| Risiko | Mitigasi |
+|--------|---------|
+| Model salah grade TBS matang → rugi per ton | |
+| Kamera kotor di loading ramp | |
+| Petugas senior menolak sistem AI | |
+| Foto rekam identitas pekerja | |
+
+**3.6 Roadmap**
+```
+Minggu 1–2:  Kumpulkan 200+ foto TBS per kelas, beri label
+Minggu 3–4:  Fine-tuning YOLO dengan dataset TBS
+Minggu 5:    Testing offline
+Minggu 6–7:  Pilot di 1 loading ramp
+Minggu 8:    Evaluasi → keputusan scale-up
+```
+
+---
+
+## Bagian 4 — Refleksi Etika (20 menit)
+
+**4.1** Kamera di loading ramp merekam pekerja setiap hari.
+Apa yang harus dilakukan perusahaan **sebelum** memasang kamera?
+
+**4.2** Jika AI salah grade dan perusahaan rugi besar —
+siapa yang bertanggung jawab: pengembang, operator, atau manajer?
+
+**4.3** Petugas senior 10 tahun menolak sistem AI karena merasa tidak dipercaya.
+Bagaimana Anda mengelola perubahan ini?
+
+---
+
+## Output Tugas Sawit
+
+Masukkan ke folder `sawit/` dalam ZIP:
+```
+sawit/
+  proposal_sawitvision.pdf       Bagian 1–3
+  tabel_eksperimen_tbs.pdf       Bagian 2 + analisis kritis
+  refleksi_etika.pdf             Bagian 4
+  foto_tbs_1.jpg + _2.jpg + _3.jpg
+  screenshot_scan_tbs.png
+```
+
+---
+
+# 🔽 BAGIAN 4 — ALTERNATIF: CLONE DARI GITHUB
+
+> Gunakan ini jika mengalami kesulitan teknis dalam membangun dari nol,
+> atau jika ingin langsung mencoba aplikasi yang sudah lengkap.
+
+---
+
+## Clone Proyek
+
+```bash
+git clone https://github.com/triandessinaga/ComputerVision.git
+cd ComputerVision
+```
+
+Jika belum punya Git, download installer dari **https://git-scm.com/download/win**
+dan install dengan pengaturan default.
+
+## Setup Setelah Clone
+
+```bash
+# Buat virtual environment
+py -3 -m venv .venv
+
+# Aktifkan
+.\.venv\Scripts\Activate.ps1
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Verifikasi
+python -m unittest discover -s tests -v
+
+# Jalankan!
+python app.py
+```
+
+## Perbedaan Clone vs Bangun Sendiri
+
+| Aspek | Bangun dari Nol | Clone |
+|-------|-----------------|-------|
+| Pemahaman kode | ✅ Lebih dalam | ⚡ Langsung jalan |
+| Waktu setup | ~30 menit | ~10 menit |
+| Cocok untuk | Belajar mandiri | Demo cepat |
+| Nilai praktikum | ✅ Penuh | ✅ Penuh (dengan bukti) |
+
+> 💡 Meskipun clone, Anda tetap harus melakukan semua eksperimen dan tugas sawit.
+> Bedanya hanya di tahap setup awal.
 
 ---
 
 ## ⚠️ Disclaimer
 
 Model YOLO pretrained COCO mengenali **kategori generik**, bukan merek/SKU spesifik.
-Harga di `catalog.json` adalah **simulasi pendidikan**. Untuk kasir produksi nyata
-dibutuhkan: model custom, barcode scanner, integrasi ERP, dan validasi keamanan penuh.
+Harga di `catalog.json` adalah **simulasi pendidikan**.
+Untuk kasir produksi: butuh model custom, barcode scanner, dan validasi sistem penuh.
 
 ---
 
