@@ -521,143 +521,251 @@ Buat ZIP: **`NamaNIM_SmartRetail.zip`**
 ---
 
 # 🌴 BAGIAN 3 — TUGAS SAWIT
+### Transfer Konsep: dari Retail ke Industri Kelapa Sawit
 
 > **Durasi:** 120 menit di luar jam kelas  
-> **Bobot:** 30% dari total nilai
+> **Bobot:** 30% dari total nilai  
+> **Tidak perlu coding** — fokus pada pemahaman konsep bisnis dan AI
 
 ---
 
-## Konteks Bisnis
+## 🎯 Mengapa Sawit?
 
-> Perusahaan sawit di Sumatera ingin menggunakan AI untuk menggantikan
-> inspeksi manual kualitas **Tandan Buah Segar (TBS)** di loading ramp.
-> Grading saat ini dilakukan petugas — lambat, subjektif, tidak konsisten antar shift.
+Indonesia adalah **produsen minyak sawit terbesar di dunia** (±47 juta ton/tahun).
+Kualitas CPO (Crude Palm Oil) sangat bergantung pada ketepatan grading
+**Tandan Buah Segar (TBS)** di loading ramp pabrik.
 
----
+**Masalah nyata saat ini:**
+- Grading dilakukan manual oleh petugas — subjektif dan tidak konsisten
+- Petugas shift pagi vs malam bisa beri grade berbeda untuk TBS yang sama
+- Tidak ada rekam data digital → susah dianalisis oleh manajemen
+- Skala besar: ratusan ton TBS masuk per hari per pabrik
 
-## Skema Sistem SawitVision
-
-```
-TBS di       ┌─────────┐   ┌────────────────┐   ┌─────────────────┐
-Loading ────▶│ Kamera  │──▶│  YOLO Custom   │──▶│ Petugas Validasi│
-Ramp         │ IP / HD │   │ (TBS Dataset!) │   │  Human-in-Loop  │
-             └─────────┘   └────────────────┘   └────────┬────────┘
-                                                          │
-                                                          ▼
-                                                  ┌───────────────┐
-                                                  │   Database    │──▶ Dashboard QC
-                                                  └───────────────┘
-```
+**Pertanyaan bisnis:** Bisakah AI seperti yang Anda pakai hari ini membantu?
 
 ---
 
-## Bagian 1 — Analisis Gap (20 menit)
+## 🧠 Konsep Kunci — Baca Dulu (15 menit)
 
-| Aspek | Smart Retail Inspector | SawitVision (jawaban Anda) |
-|-------|----------------------|---------------------------|
-| Objek | Botol, buku, ponsel | TBS — COCO tidak mengenali |
-| Model YOLO | Pretrained generik | ❓ |
-| Konfirmasi | Tekan `SPACE` | ❓ |
-| Output | CSV + struk | ❓ |
-| Lingkungan | Indoor, meja | ❓ Outdoor, loading ramp |
-| Skala | Puluhan item/hari | ❓ Ratusan ton/hari |
+### Kelas Kematangan TBS
+
+| Kelas | Tampilan Visual | Nilai Bisnis |
+|-------|----------------|-------------|
+| 🟢 **Unripe (Mentah)** | Warna hitam/hijau, sedikit brondolan | Minyak rendah, harga rendah |
+| 🟡 **Ripe (Matang)** | Warna jingga/merah, brondolan berjatuhan | Minyak optimal, harga terbaik |
+| 🔴 **Overripe (Lewat Matang)** | Brondolan banyak jatuh, warna gelap | Asam lemak bebas tinggi, kualitas turun |
+
+**Dampak salah grade:**
+
+> Jika 10 ton TBS matang salah diklasifikasikan sebagai mentah →
+> selisih harga bisa Rp 200.000–500.000/ton →
+> kerugian Rp 2–5 juta **per kejadian**.
+> Jika terjadi 5× sehari = Rp 10–25 juta/hari.
+
+### Mengapa Model Retail Kita Tidak Bisa Dipakai Langsung?
+
+Model YOLO yang kita pakai dilatih dengan **80 kategori COCO** (botol, buku, orang, dll).
+TBS sawit **tidak ada** dalam dataset COCO.
+
+> Ini bukan kegagalan — ini pelajaran penting:
+> **Model generik tidak bisa otomatis dipakai di domain khusus.**
+> Butuh data domain spesifik dan proses training/fine-tuning.
 
 ---
 
-## Bagian 2 — Eksperimen (30 menit)
+## 📂 LANGKAH 1 — Lihat Dataset Publik TBS (20 menit)
 
-Cari **3 foto TBS** dari sumber legal (tanpa wajah pekerja):
+Kita akan menggunakan dataset **yang sudah ada** — tidak perlu kumpulkan foto sendiri.
+
+### Dataset yang Bisa Digunakan
+
+**Pilihan A — Roboflow Universe (Recommended)**
+
+1. Buka browser → pergi ke: **https://universe.roboflow.com**
+2. Di kolom pencarian, ketik: `oil palm bunch`
+3. Pilih salah satu dataset yang muncul, misalnya:
+   - **"Oil Palm Fresh Fruit Bunch"** — 3 kelas, 1200+ gambar
+   - **"Palm Oil Detection"** — deteksi TBS di kebun
+4. Klik dataset → lihat tab **Images** untuk melihat contoh foto
+5. Lihat tab **Classes** untuk melihat kategori yang ada
+
+**Catat di laporan Anda:**
+- Nama dataset yang dipilih
+- Jumlah gambar total
+- Kelas/kategori yang tersedia
+- Link URL dataset
+
+**Pilihan B — Kaggle**
+
+1. Buka: **https://www.kaggle.com/datasets**
+2. Search: `palm oil fresh fruit bunch` atau `TBS sawit`
+3. Pilih dataset yang relevan → lihat gambar contohnya
+
+---
+
+## 🔬 LANGKAH 2 — Eksperimen Sederhana (20 menit)
+
+Kita akan lihat apa yang terjadi jika foto TBS di-scan dengan aplikasi kita.
+
+### Cara Mendapatkan Foto TBS
+
+Dari dataset Roboflow yang Anda temukan di Langkah 1:
+- Klik tab **Images** → klik kanan salah satu foto → **Save Image As**
+- Simpan 3 foto: 1 TBS matang, 1 mentah, 1 yang tidak jelas
+
+Atau download contoh foto dari Google Images (cari: `oil palm fresh fruit bunch`).
+
+### Jalankan di Aplikasi
 
 ```bash
+# Pastikan virtual environment aktif dulu
 python app.py --image foto_tbs_matang.jpg
 ```
 
-| Foto | Objek Nyata | Terdeteksi | Conf | Relevan? |
-|------|-------------|-----------|------|----------|
-| TBS Matang | Tandan buah | ??? | 0.__ | Ya/Tidak |
-| TBS Mentah | Tandan buah | ??? | 0.__ | Ya/Tidak |
-| TBS Sulit | Tandan buah | ??? | 0.__ | Ya/Tidak |
+### Catat Hasilnya
 
-> **❓ Pertanyaan Kritis:** Model tidak mengenali TBS — apakah ini kegagalan AI
-> atau justru pelajaran penting tentang batas model generik?
-> Jelaskan implikasinya untuk bisnis sawit dalam 3–5 kalimat.
+| # | Nama File Foto | Terdeteksi Sebagai | Confidence | Ada di Catalog? |
+|---|---------------|-------------------|-----------|----------------|
+| 1 | foto_tbs_matang.jpg | | | Ya / Tidak |
+| 2 | foto_tbs_mentah.jpg | | | Ya / Tidak |
+| 3 | foto_tbs_sulit.jpg | | | Ya / Tidak |
 
----
+**Pertanyaan — jawab di laporan:**
 
-## Bagian 3 — Proposal Sistem (50 menit)
-
-Buat proposal **1–2 halaman** berisi:
-
-**3.1 Problem Statement**
-- Apa kerugian bisnis jika grading TBS salah?
-
-**3.2 Proposed Solution**
-- Spesifikasi kamera di loading ramp
-- Pretrained COCO atau model custom TBS?
-- Cara operator konfirmasi
-
-**3.3 Data Requirements**
-```
-□ _____ foto TBS per kelas (matang/mentah/over-ripe)
-□ Label bounding box oleh: ____________________
-□ Variasi: pagi/siang/sore, cerah/hujan, besar/kecil
-□ Metadata per foto: __________________________
-```
-
-**3.4 Pilot KPI**
-
-| KPI | Cara Mengukur |
-|-----|---------------|
-| Akurasi deteksi | Dibandingkan keputusan petugas ahli |
-| Waktu per inspeksi | Dibandingkan waktu manual baseline |
-| Tingkat override petugas | % keputusan AI yang dikoreksi |
-
-> ⚠️ Jangan mengarang angka target. Tulis: *"Target ditetapkan setelah baseline manual diukur 2 minggu."*
-
-**3.5 Risiko & Mitigasi**
-
-| Risiko | Mitigasi |
-|--------|---------|
-| Model salah grade TBS matang → rugi per ton | |
-| Kamera kotor di loading ramp | |
-| Petugas senior menolak sistem AI | |
-| Foto rekam identitas pekerja | |
-
-**3.6 Roadmap**
-```
-Minggu 1–2:  Kumpulkan 200+ foto TBS per kelas, beri label
-Minggu 3–4:  Fine-tuning YOLO dengan dataset TBS
-Minggu 5:    Testing offline
-Minggu 6–7:  Pilot di 1 loading ramp
-Minggu 8:    Evaluasi → keputusan scale-up
-```
+> 1. Apa yang model deteksi dari foto TBS? Apakah relevan?
+> 2. Mengapa model COCO tidak bisa mengenali TBS dengan tepat?
+> 3. Apa artinya ini untuk bisnis sawit yang mau pakai AI?
 
 ---
 
-## Bagian 4 — Refleksi Etika (20 menit)
+## 🏗️ LANGKAH 3 — Rancang Sistem SawitVision (40 menit)
 
-**4.1** Kamera di loading ramp merekam pekerja setiap hari.
-Apa yang harus dilakukan perusahaan **sebelum** memasang kamera?
+Tidak perlu coding. Cukup **gambar dan jelaskan** sistem yang Anda usulkan.
 
-**4.2** Jika AI salah grade dan perusahaan rugi besar —
-siapa yang bertanggung jawab: pengembang, operator, atau manajer?
+### Skema Sistem
 
-**4.3** Petugas senior 10 tahun menolak sistem AI karena merasa tidak dipercaya.
-Bagaimana Anda mengelola perubahan ini?
+```
+Truk TBS         ┌──────────┐   ┌─────────────────┐
+tiba di    ─────▶│  Kamera  │──▶│   AI Model      │
+Loading          │  IP/HD   │   │ (Khusus TBS!)   │
+Ramp             └──────────┘   └────────┬────────┘
+                                         │
+                                  Hasil Prediksi:
+                              "Ripe — conf: 0.89"
+                                         │
+                              ┌──────────▼──────────┐
+                              │  Petugas Validasi   │
+                              │  Lihat layar →      │
+                              │  Tekan KONFIRMASI   │
+                              └──────────┬──────────┘
+                                         │
+                               ┌─────────▼──────────┐
+                               │    Database         │
+                               │  (Grade + Berat +   │
+                               │   Timestamp + Foto) │
+                               └─────────┬───────────┘
+                                         │
+                              ┌──────────▼──────────┐
+                              │  Dashboard Manajer  │
+                              │  - Total TBS hari ini│
+                              │  - % per kelas grade │
+                              │  - Trend kualitas    │
+                              └─────────────────────┘
+```
+
+### Isi Tabel Perbandingan
+
+| Aspek | Smart Retail Inspector (sudah kita buat) | SawitVision (yang Anda usulkan) |
+|-------|----------------------------------------|--------------------------------|
+| Objek yang dideteksi | Botol, buku, ponsel (COCO) | |
+| Model AI yang dipakai | Pretrained COCO, generik | |
+| Sumber data training | Dataset COCO (80 kelas umum) | |
+| Cara operator konfirmasi | Tekan `SPACE` di laptop | |
+| Data yang disimpan | CSV: produk, qty, harga, struk | |
+| Lingkungan operasi | Indoor, meja kasir, cahaya stabil | |
+| Skala | 1 kasir, puluhan produk/hari | |
+
+### Jawab Pertanyaan Bisnis
+
+Jawab setiap pertanyaan dalam **2–4 kalimat**:
+
+**Q1: Mengapa tidak bisa langsung pakai model retail kita untuk sawit?**
+
+**Q2: Data apa saja yang harus dikumpulkan sebelum sistem bisa dibangun?**
+(Petunjuk: lihat dataset Roboflow yang Anda temukan di Langkah 1 sebagai referensi)
+
+**Q3: Siapa saja yang terlibat dalam sistem ini?**
+(Operator kamera, petugas validasi, manajer pabrik, siapa lagi?)
+
+**Q4: Apa 2 manfaat utama untuk bisnis perusahaan sawit?**
+
+**Q5: Apa 2 risiko jika sistem ini diterapkan tanpa persiapan matang?**
 
 ---
 
-## Output Tugas Sawit
+## ✅ LANGKAH 4 — Refleksi Singkat (25 menit)
 
-Masukkan ke folder `sawit/` dalam ZIP:
+Jawab **3 pertanyaan** berikut, masing-masing **3–5 kalimat**:
+
+**Refleksi 1 — Teknologi**
+
+Dari percobaan di Langkah 2, model tidak mengenali TBS dengan tepat.
+Apa yang harus dilakukan pengembang untuk membuat model yang bisa mengenali TBS?
+Jelaskan dengan bahasa sederhana (tidak perlu istilah teknis yang rumit).
+
+**Refleksi 2 — Bisnis**
+
+Seandainya sistem SawitVision berhasil dibangun dengan akurasi 90%,
+apa keputusan bisnis yang bisa diambil manajer dari data yang terkumpul?
+Berikan 2 contoh keputusan konkret.
+
+**Refleksi 3 — Manusia & Etika**
+
+Kamera di loading ramp merekam aktivitas pekerja setiap hari.
+Sistem AI juga "menggantikan" sebagian pekerjaan petugas grading manual.
+
+- Apa yang perlu dipersiapkan perusahaan agar pekerja menerima sistem ini?
+- Siapa yang bertanggung jawab jika AI salah grade dan perusahaan rugi?
+
+---
+
+## 📦 Yang Dikumpulkan (Tugas Sawit)
+
+Buat folder `sawit/` dalam ZIP pengumpulan:
+
 ```
 sawit/
-  proposal_sawitvision.pdf       Bagian 1–3
-  tabel_eksperimen_tbs.pdf       Bagian 2 + analisis kritis
-  refleksi_etika.pdf             Bagian 4
-  foto_tbs_1.jpg + _2.jpg + _3.jpg
-  screenshot_scan_tbs.png
+  laporan_sawitvision.pdf         ← Langkah 1–4 dalam format laporan
+                                     (bisa Word/Google Docs dulu, export PDF)
+
+  screenshot_roboflow.png         ← Screenshot dataset TBS di Roboflow/Kaggle
+
+  tabel_eksperimen_tbs.png        ← Screenshot tabel Langkah 2 yang sudah diisi
+
+  screenshot_scan_tbs_1.png       ← Hasil scan foto TBS matang di aplikasi
+  screenshot_scan_tbs_2.png       ← Hasil scan foto TBS mentah di aplikasi
+
+  diagram_sawitvision.png         ← Gambar diagram sistem dari Langkah 3
+                                     (bisa tangan, draw.io, atau PowerPoint)
 ```
+
+> ⚠️ Pastikan foto TBS yang Anda gunakan **tidak mengandung wajah pekerja**.
+
+---
+
+## 📚 Referensi untuk Laporan
+
+Anda boleh mengutip sumber-sumber ini di laporan:
+
+| Sumber | Topik | Link |
+|--------|-------|------|
+| Roboflow Universe | Dataset TBS publik | https://universe.roboflow.com |
+| Ultralytics Docs | Cara kerja YOLO | https://docs.ultralytics.com |
+| Kaggle | Dataset sawit | https://kaggle.com/datasets |
+| TEORI.md (file ini) | Konsep CV, YOLO, Human-in-Loop | Baca file `TEORI.md` di repo ini |
+
+> 💡 File `TEORI.md` di repo ini berisi penjelasan lengkap tentang Computer Vision,
+> YOLO, Transfer Learning, dan Human-in-the-Loop — baca untuk memperdalam pemahaman.
 
 ---
 
